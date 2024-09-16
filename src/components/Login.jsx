@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +9,24 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-function Login() {
+function Login({ onLogin }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    const validEmail = "prueba@gmail.com";
+    const validPassword = "1234";
+
+    if (email === validEmail && password === validPassword) {
+      onLogin({ name: "prueba" }); // Llama a la función onLogin pasada como prop
+    } else {
+      setError("El correo electrónico o la contraseña son incorrectos.");
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger className="text-black-500">Iniciar Sesion</DialogTrigger>
@@ -18,19 +37,24 @@ function Login() {
           </DialogTitle>
 
           <DialogDescription>
-            <form className="mt-4 space-y-4">
+            <form className="mt-4 space-y-4" onSubmit={handleLogin}>
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-2 text-gray-700 border rounded-3xl focus:outline-none shadow-md hover:border-blue-600"
                 placeholder="Correo electrónico"
                 required
               />
               <input
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-2 text-gray-700 border rounded-3xl focus:outline-none shadow-md hover:border-blue-600"
                 placeholder="Contraseña"
                 required
               />
+              {error && <p className="text-red-500">{error}</p>}
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
                   <input
