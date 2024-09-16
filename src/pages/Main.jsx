@@ -36,7 +36,7 @@ const CustomButton = ({ children, className = "", onClick = () => {} }) => (
   </button>
 );
 
-export default function App() {
+export default function Main() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [groups, setGroups] = useState([
