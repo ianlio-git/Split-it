@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useUser } from "../context/UserContext";
 import {
   Dialog,
   DialogContent,
@@ -9,19 +9,38 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-function Login({ onLogin }) {
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [users, setUsers] = useState([]);
+
+  // Obtener los métodos login y logout del contexto
+  const { login } = useUser();
+
+  // Carga los datos desde el archivo JSON ubicado en public
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/users.json");
+        const data = await response.json();
+        setUsers(data.users);
+      } catch (error) {
+        console.error("Error al cargar el archivo JSON:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleLogin = (e) => {
     e.preventDefault();
+    const user = users.find(
+      (user) => user.email === email && user.password === password
+    );
 
-    const validEmail = "prueba@gmail.com";
-    const validPassword = "1234";
-
-    if (email === validEmail && password === validPassword) {
-      onLogin({ name: "prueba" }); // Llama a la función onLogin pasada como prop
+    if (user) {
+      login({ name: user.name }); // Actualizar el contexto con el usuario
     } else {
       setError("El correo electrónico o la contraseña son incorrectos.");
     }
@@ -29,53 +48,85 @@ function Login({ onLogin }) {
 
   return (
     <Dialog>
-      <DialogTrigger className="text-black-500">Iniciar Sesion</DialogTrigger>
-      <DialogContent className="flex items-center justify-center p-6">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold flex items-center justify-center">
-            Bienvenido a Split-it!
+      <DialogTrigger className="text-white hover:text-blue-200 transition-all duration-300 transform hover:scale-105 text-sm md:text-lg  ">
+        Iniciar Sesión
+      </DialogTrigger>
+      <DialogContent className="p-0 overflow-hidden bg-transparent rounded-3xl shadow-2xl max-w-md w-full mx-auto backdrop-blur-md backdrop-filter border-0">
+        <DialogHeader className="p-8 bg-gray-900 bg-opacity-40">
+          <DialogTitle className="text-3xl font-bold text-center text-white mb-6">
+            ¡Bienvenido!
           </DialogTitle>
-
           <DialogDescription>
-            <form className="mt-4 space-y-4" onSubmit={handleLogin}>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 text-gray-700 border rounded-3xl focus:outline-none shadow-md hover:border-blue-600"
-                placeholder="Correo electrónico"
-                required
-              />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 text-gray-700 border rounded-3xl focus:outline-none shadow-md hover:border-blue-600"
-                placeholder="Contraseña"
-                required
-              />
-              {error && <p className="text-red-500">{error}</p>}
-              <div className="flex justify-between items-center">
+            <form className="space-y-6" onSubmit={handleLogin}>
+              <div className="relative">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-6 py-3 text-white bg-blue-900 bg-opacity-30 border border-blue-400 border-opacity-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-blue-200 pr-10"
+                  placeholder="Correo electrónico"
+                  required
+                />
+                <svg
+                  className="w-5 h-5 text-blue-300 absolute right-3 top-3"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                </svg>
+              </div>
+              <div className="relative">
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-6 py-3 text-white bg-blue-900 bg-opacity-30 border border-blue-400 border-opacity-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-blue-200 pr-10"
+                  placeholder="Contraseña"
+                  required
+                />
+                <svg
+                  className="w-5 h-5 text-blue-300 absolute right-3 top-3"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              {error && (
+                <p className="text-red-400 text-center text-sm">{error}</p>
+              )}
+              <div className="flex justify-between items-center text-sm">
                 <div className="flex items-center">
                   <input
                     type="checkbox"
                     id="rememberMe"
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-blue-300 rounded bg-blue-900 bg-opacity-30"
                   />
                   <label
                     htmlFor="rememberMe"
-                    className="ml-2 block text-sm text-gray-900"
+                    className="ml-2 block text-blue-200"
                   >
                     Recuérdame
                   </label>
                 </div>
-                <a href="#" className="text-sm text-blue-600 hover:underline">
+                <a
+                  href="#"
+                  className="text-blue-300 hover:text-blue-200 transition-colors duration-200"
+                >
                   ¿Olvidaste tu contraseña?
                 </a>
               </div>
               <button
                 type="submit"
-                className="w-full bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Iniciar Sesión
               </button>

@@ -84,7 +84,6 @@ export default function Main() {
         } lg:block`}
       >
         <div className="p-4 border-b flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-teal-500">Splitwise</h1>
           <CustomButton
             className="lg:hidden bg-gray-200 hover:bg-gray-300"
             onClick={toggleSidebar}
@@ -92,25 +91,7 @@ export default function Main() {
             Menu
           </CustomButton>
         </div>
-        <nav className="p-4">
-          <ul className="space-y-2">
-            <li>
-              <CustomButton className="w-full justify-start text-left hover:bg-gray-100">
-                Panel de control
-              </CustomButton>
-            </li>
-            <li>
-              <CustomButton className="w-full justify-start text-left hover:bg-gray-100">
-                Actividad reciente
-              </CustomButton>
-            </li>
-            <li>
-              <CustomButton className="w-full justify-start text-left hover:bg-gray-100">
-                Todos los gastos
-              </CustomButton>
-            </li>
-          </ul>
-        </nav>
+
         <div className="p-4 border-t">
           <h2 className="font-semibold mb-2">GRUPOS</h2>
           <ul className="space-y-1">
@@ -241,24 +222,6 @@ export default function Main() {
             </CardContent>
           </Card>
         </main>
-      </div>
-
-      {/* Right Sidebar */}
-      <div className="w-full lg:w-64 bg-white border-t lg:border-l p-4">
-        <div className="mb-4">
-          <h3 className="font-semibold mb-2">DIVIDE LA CUENTA DE CENA</h3>
-          <div className="bg-gray-200 p-4 rounded-lg flex justify-center items-center">
-            <span className="text-6xl text-gray-600">🍽️</span>
-          </div>
-        </div>
-        <p className="text-sm mb-4">
-          Echa un vistazo a Plates, nuestra aplicación gratis para iOS que te
-          ayuda a dividir la cuenta de la cena con tus amigos de forma fácil y
-          rápida.
-        </p>
-        <CustomButton className="w-full bg-orange-500 hover:bg-orange-600 text-white">
-          Descargar Plates
-        </CustomButton>
       </div>
     </div>
   );

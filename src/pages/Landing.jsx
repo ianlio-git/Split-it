@@ -1,75 +1,131 @@
+import React, { useState, useEffect } from "react";
+import { useUser } from "../context/UserContext";
 import calculate from "../assets/png/calcular.png";
 import tikets from "../assets/png/tikets.png";
 import Divide from "../assets/png/dividir.png";
-
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 function Landing() {
+  const { user } = useUser();
   const navigate = useNavigate();
+  const [isContentVisible, setIsContentVisible] = useState(true);
+  const [isButtonVisible, setIsButtonVisible] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setIsContentVisible(false);
+      const timer = setTimeout(() => setIsButtonVisible(true), 300);
+      return () => clearTimeout(timer);
+    } else {
+      setIsContentVisible(true);
+      setIsButtonVisible(false);
+    }
+  }, [user]);
+
   const goToApp = () => {
-    navigate("/Main");
+    navigate("/main");
   };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
+  };
+
   return (
-    // este es el heder por asi decirlo  puede ser un heder pricipal
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      <main className="flex-1 container mx-auto px-6 py-8">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Bienvenido a Split-it!
-          </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            La forma más fácil de dividir gastos con amigos y familia
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Sube Tickets</h2>
-            <p className="text-gray-600">
-              Sube fácilmente fotos de tus tickets o ingresa los gastos
-              manualmente.
-            </p>
-            <img
-              src={tikets}
-              alt="Subir tickets"
-              className="mt-4 w-full h-auto"
-            />
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Divide Gastos</h2>
-            <p className="text-gray-600">
-              Divide los gastos equitativamente o especifica porcentajes
-              personalizados.
-            </p>
-            <img
-              src={Divide}
-              alt="Dividir gastos"
-              className="mt-4 w-full h-auto"
-            />
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">
-              Calcula Contribuciones
-            </h2>
-            <p className="text-gray-600">
-              Obtén cálculos automáticos de cuánto debe pagar o recibir cada
-              miembro del grupo.
-            </p>
-            <img
-              src={calculate}
-              alt="Calcular contribuciones"
-              className="mt-4 w-full h-auto"
-            />
-          </div>
-        </div>
-
-        <div className="text-center">
-          <button
-            onClick={goToApp}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-xl"
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <main className="flex-1 container mx-auto px-6 py-12">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          className="text-center mb-12"
+        >
+          <motion.h1
+            variants={itemVariants}
+            className="text-3xl md:text-5xl font-bold text-blue-900 mb-4"
           >
-            Comienza Ahora
-          </button>
+            Bienvenido a Split-it!
+          </motion.h1>
+          <motion.p
+            variants={itemVariants}
+            className="text-xl md:text-2xl text-gray-600 mb-8"
+          >
+            La forma más fácil de dividir gastos con amigos y familia
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{
+            opacity: isButtonVisible ? 1 : 0,
+            scale: isButtonVisible ? 1 : 0.8,
+          }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-12"
+        >
+          {user && (
+            <button
+              onClick={goToApp}
+              className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-4 px-8 rounded-full text-xl shadow-lg transition-transform duration-300 transform hover:scale-105"
+            >
+              Comienza Ahora
+            </button>
+          )}
+        </motion.div>
+
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          className="grid md:grid-cols-3 gap-8 mb-8"
+        >
+          {[
+            {
+              title: "Sube Tickets",
+              description:
+                "Sube fácilmente fotos de tus tickets o ingresa los gastos manualmente.",
+              image: tikets,
+            },
+            {
+              title: "Divide Gastos",
+              description:
+                "Divide los gastos equitativamente o especifica porcentajes personalizados.",
+              image: Divide,
+            },
+            {
+              title: "Calcula",
+              description:
+                "Obtén cálculos automáticos de cuánto debe pagar o recibir cada miembro.",
+              image: calculate,
+            },
+          ].map((item, index) => (
+            <motion.div
+              key={index}
+              variants={itemVariants}
+              className="bg-white p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105 hover:shadow-xl"
+            >
+              <h2 className="text-2xl font-semibold mb-4 text-blue-900">
+                {item.title}
+              </h2>
+              <p className="text-gray-700 mb-6">{item.description}</p>
+              <img
+                src={item.image}
+                alt={item.title}
+                className="w-full h-auto rounded-md shadow-sm"
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Información adicional */}
+        <div className="text-center py-6">
+          <p className="text-xl text-gray-400 mb-2">
+            Inicia sesión para comenzar a dividir gastos con tu familia y amigos
+          </p>
+          <p className="text-sm text-gray-400">
+            Usuario de prueba: <strong>prueba@gmail.com</strong>
+            <br />
+            Contraseña: <strong>1234</strong>
+          </p>
         </div>
       </main>
     </div>
