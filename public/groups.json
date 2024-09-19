@@ -1,0 +1,21 @@
+[
+  {
+    "id": 1,
+    "name": "San Martín",
+    "type": "Viaje",
+    "balance": 61760.0,
+    "image": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-R99kiXeUYi0DQW6D0kBoXICD6VGIlK.png"
+  },
+  {
+    "id": 2,
+    "name": "prueba",
+    "type": "Hogar",
+    "balance": 4520.0
+  },
+  {
+    "id": 3,
+    "name": "Gastos sin grupo",
+    "type": "Otro",
+    "balance": 121760.0
+  }
+]

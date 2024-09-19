@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import {
@@ -15,7 +16,6 @@ function Login() {
   const [error, setError] = useState("");
   const [users, setUsers] = useState([]);
 
-  // Obtener los métodos login y logout del contexto
   const { login } = useUser();
 
   // Carga los datos desde el archivo JSON ubicado en public
@@ -40,7 +40,7 @@ function Login() {
     );
 
     if (user) {
-      login({ name: user.name }); // Actualizar el contexto con el usuario
+      login({ name: user.name });
     } else {
       setError("El correo electrónico o la contraseña son incorrectos.");
     }

@@ -5,8 +5,12 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
 import LandingPage from "./pages/Landing";
 import Main from "./pages/Main";
+import Groups from "./pages/Groups";
+import Profile from "./pages/Profile";
+import Friends from "./pages/Friends";
 import Navbar from "./Layout/Navbar";
 import Footer from "./Layout/Footer";
+
 import "./index.css";
 
 const App = () => {
@@ -18,6 +22,9 @@ const App = () => {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/main" element={<Main />} />
+            <Route path="/groups" element={<Groups />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/friends" element={<Friends />} />
           </Routes>
         </main>
         <Footer />

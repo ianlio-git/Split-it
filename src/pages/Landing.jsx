@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import calculate from "../assets/png/calcular.png";
@@ -9,6 +10,7 @@ import { motion } from "framer-motion";
 function Landing() {
   const { user } = useUser();
   const navigate = useNavigate();
+  // eslint-disable-next-line no-unused-vars
   const [isContentVisible, setIsContentVisible] = useState(true);
   const [isButtonVisible, setIsButtonVisible] = useState(false);
 
@@ -24,7 +26,7 @@ function Landing() {
   }, [user]);
 
   const goToApp = () => {
-    navigate("/main");
+    navigate("/groups");
   };
 
   const itemVariants = {
