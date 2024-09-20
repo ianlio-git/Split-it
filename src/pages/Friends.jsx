@@ -1,4 +1,3 @@
-// Amigos.js
 // eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
 import InviteFriend from "../components/InviteFriend";
@@ -6,7 +5,7 @@ import InviteFriend from "../components/InviteFriend";
 export default function Friends() {
   const [friends, setFriends] = useState([]);
 
-  // Cargar amigos desde el archivo JSON al cargar el componente
+  // Cargar amigos desde el archivo JSON
   useEffect(() => {
     const fetchFriends = async () => {
       try {
