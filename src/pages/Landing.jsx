@@ -6,6 +6,7 @@ import tikets from "../assets/png/tikets.png";
 import Divide from "../assets/png/dividir.png";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import Footer from "../Layout/Footer";
 
 function Landing() {
   const { user } = useUser();
@@ -139,6 +140,7 @@ function Landing() {
           ))}
         </motion.div>
       </main>
+      <Footer />
     </div>
   );
 }

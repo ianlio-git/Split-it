@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   Sheet,
   SheetContent,
@@ -21,8 +22,38 @@ import MenuItemButton from "../components/MenuItemButton";
 import { Button } from "@/components/ui/button";
 
 export default function UserMenu() {
-  const { user, logout } = useUser();
   const navigate = useNavigate();
+  const { user, logout } = useUser(); // Use the useUser hook to get user and logout
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    avatar: "",
+  });
+
+  useEffect(() => {
+    // Cargar datos del usuario desde el archivo JSON
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("/users.json");
+        const data = await response.json();
+        if (data.users.length > 0) {
+          const userData = data.users[0];
+          setFormData({
+            name: userData.name,
+            email: userData.email,
+            password: "",
+            avatar: userData.avatar,
+          });
+        }
+      } catch (error) {
+        console.error("Error al cargar los datos del usuario:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -44,23 +75,25 @@ export default function UserMenu() {
       </SheetTrigger>
       <SheetContent className="w-[300px] sm:w-[400px] mt-16 max-h-[calc(100vh-4rem)] overflow-auto bg-gray-900 text-white border-l border-blue-600">
         <SheetHeader className="text-center">
-          <Avatar className="h-24 w-24 mx-auto mb-4">
+          <Avatar className="w-24 h-24 rounded-full">
             <AvatarImage
-              src={user.avatarUrl || "/placeholder.svg?height=96&width=96"}
-              alt={user.name}
+              src={formData.avatar || "/placeholder.svg?height=96&width=96"}
+              alt={formData.name}
+              className="w-full h-full object-cover rounded-full"
             />
             <AvatarFallback className="text-3xl">
-              {user.name
+              {formData.name
                 .split(" ")
                 .map((n) => n[0])
                 .join("")
                 .toUpperCase()}
             </AvatarFallback>
           </Avatar>
+
           <SheetTitle className="text-2xl font-bold text-white">
             Mi Cuenta
           </SheetTitle>
-          <p className="text-lg text-gray-300">{user.name}</p>
+          <p className="text-lg text-gray-300">{formData.name}</p>
         </SheetHeader>
 
         <div className="border-b border-gray-700 my-6"></div>

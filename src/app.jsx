@@ -1,4 +1,3 @@
-// index.jsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -9,7 +8,7 @@ import Groups from "./pages/Groups";
 import Profile from "./pages/Profile";
 import Friends from "./pages/Friends";
 import Navbar from "./Layout/Navbar";
-import Footer from "./Layout/Footer";
+import ProtectedRoute from "./context/ProtectedRoute"; // Importa el componente
 
 import "./index.css";
 
@@ -21,13 +20,24 @@ const App = () => {
         <main className="flex-1 mt-[4rem]">
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/main" element={<Main />} />
-            <Route path="/groups" element={<Groups />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/friends" element={<Friends />} />
+            <Route
+              path="/main"
+              element={<ProtectedRoute element={<Main />} />}
+            />
+            <Route
+              path="/groups"
+              element={<ProtectedRoute element={<Groups />} />}
+            />
+            <Route
+              path="/profile"
+              element={<ProtectedRoute element={<Profile />} />}
+            />
+            <Route
+              path="/friends"
+              element={<ProtectedRoute element={<Friends />} />}
+            />
           </Routes>
         </main>
-        <Footer />
       </div>
     </UserProvider>
   );

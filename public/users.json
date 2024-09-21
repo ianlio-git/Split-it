@@ -5,7 +5,8 @@
       "name": "pepe",
       "lastname": "perez",
       "email": "prueba@gmail.com",
-      "password": "1234"
+      "password": "1234",
+      "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSocErq1QEBqh8nni6H9Kfxa9teMfXSpg0jzQ&s"
     }
   ]
 }

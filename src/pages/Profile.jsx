@@ -1,20 +1,42 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 
+const InputField = ({
+  id,
+  label,
+  name,
+  type,
+  value,
+  onChange,
+  placeholder,
+}) => (
+  <div className="mt-4">
+    <Label htmlFor={id}>{label}</Label>
+    <Input
+      id={id}
+      name={name}
+      type={type}
+      value={value} // Mantener el valor vacío
+      onChange={onChange}
+      placeholder={placeholder}
+      className="bg-gray-700 text-white p-2 rounded-full"
+    />
+  </div>
+);
+
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
+    lastname: "",
     email: "",
-    password: "",
     avatar: "",
+    password: "", // Agregado para la nueva contraseña
   });
 
   useEffect(() => {
-    // Cargar datos del usuario desde el archivo JSON
     const fetchUser = async () => {
       try {
         const response = await fetch("/users.json");
@@ -22,12 +44,6 @@ export default function Profile() {
         if (data.users.length > 0) {
           const userData = data.users[0];
           setUser(userData);
-          setFormData({
-            name: userData.name,
-            email: userData.email,
-            password: "",
-            avatar: userData.avatar || "https://via.placeholder.com/150",
-          });
         }
       } catch (error) {
         console.error("Error al cargar los datos del usuario:", error);
@@ -44,12 +60,10 @@ export default function Profile() {
 
   const handleSaveClick = () => {
     console.log("Datos guardados:", formData);
-    setUser({
-      ...user,
-      name: formData.name,
-      email: formData.email,
-      avatar: formData.avatar,
-    });
+    setUser((prevUser) => ({
+      ...prevUser,
+      ...formData,
+    }));
   };
 
   const handleDeleteAccount = () => {
@@ -66,7 +80,7 @@ export default function Profile() {
       <div className="max-w-xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
         <div className="flex items-center space-x-4">
           <img
-            src={formData.avatar}
+            src={user.avatar}
             alt="Avatar"
             className="w-24 h-24 rounded-full object-cover"
           />
@@ -80,48 +94,51 @@ export default function Profile() {
 
         <div className="mt-6">
           <h2 className="text-xl font-semibold">Detalles del Perfil</h2>
-          <div className="mt-4">
-            <Label htmlFor="avatar">Foto de perfil</Label>
-            <Input
-              id="avatar"
-              name="avatar"
-              value={formData.avatar}
-              onChange={handleInputChange}
-              className="bg-gray-700 text-white p-2 rounded-full"
-            />
-          </div>
-          <div className="mt-4">
-            <Label htmlFor="name">Nombre</Label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className="bg-gray-700 text-white p-2 rounded-full"
-            />
-          </div>
-          <div className="mt-4">
-            <Label htmlFor="email">Correo electrónico</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="bg-gray-700 text-white p-2 rounded-full"
-            />
-          </div>
-          <div className="mt-4">
-            <Label htmlFor="password">Contraseña</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              className="bg-gray-700 text-white p-2 rounded-full"
-            />
-          </div>
+          <InputField
+            id="avatar"
+            label="Foto de perfil"
+            name="avatar"
+            type="text"
+            value={formData.avatar} // Campo vacío
+            onChange={handleInputChange}
+            placeholder="Ingrese la URL de su foto de perfil"
+          />
+          <InputField
+            id="name"
+            label="Nombre"
+            name="name"
+            type="text"
+            value={formData.name} // Campo vacío
+            onChange={handleInputChange}
+            placeholder="Ingrese su nombre"
+          />
+          <InputField
+            id="lastname"
+            label="Apellido"
+            name="lastname"
+            type="text"
+            value={formData.lastname} // Campo vacío
+            onChange={handleInputChange}
+            placeholder="Ingrese su apellido"
+          />
+          <InputField
+            id="email"
+            label="Correo Electrónico"
+            name="email"
+            type="email"
+            value={formData.email} // Campo vacío
+            onChange={handleInputChange}
+            placeholder="Ingrese su correo electrónico"
+          />
+          <InputField
+            id="password"
+            label="Nueva Contraseña"
+            name="password"
+            type="password"
+            value={formData.password} // Campo vacío
+            onChange={handleInputChange}
+            placeholder="Ingrese su nueva Contraseña"
+          />
           <Button
             onClick={handleSaveClick}
             className="mt-4 bg-green-700 hover:bg-green-800 rounded-full"

@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import UserMenu from "./UserMenu";
@@ -5,11 +6,34 @@ import Auth from "../components/Auth";
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOutIcon } from "lucide-react";
+import Profile from "../pages/Profile";
 
 function Navbar() {
   const { user, logout } = useUser();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [avatar, setAvatar] = useState("");
+  const goToProfile = () => {
+    navigate("/profile");
+  };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/users.json"); // Asegúrate de que la ruta es correcta
+        const data = await response.json();
+        if (data.users.length > 0) {
+          const userData = data.users[0];
+          setAvatar(userData.avatar);
+        }
+      } catch (error) {
+        console.error("Error al cargar los datos del usuario:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const isLanding = location.pathname === "/";
 
@@ -25,12 +49,11 @@ function Navbar() {
             {user ? (
               <>
                 <Button className="relative flex items-center space-x-2 bg-transparent hover:bg-transparent">
-                  <Avatar className="h-10 w-10">
+                  <Avatar className="h-10 w-10" onClick={goToProfile}>
                     <AvatarImage
-                      src={
-                        user.avatarUrl || "/placeholder.svg?height=40&width=40"
-                      }
+                      src={avatar || "/placeholder.svg?height=40&width=40"}
                       alt={user.name}
+                      className="object-cover"
                     />
                     <AvatarFallback>
                       {user.name
@@ -40,7 +63,10 @@ function Navbar() {
                         .toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xl font-medium text-white hidden sm:inline">
+                  <span
+                    className="text-xl font-medium text-white hidden sm:inline"
+                    onClick={goToProfile}
+                  >
                     {user.name}
                   </span>
                   <span className="sr-only">Abrir menú de usuario</span>
@@ -56,15 +82,14 @@ function Navbar() {
                 </Button>
               </>
             ) : (
-              <>
-                <Auth />
-              </>
+              <Auth />
             )}
           </div>
         </nav>
       </header>
     );
   }
+
   // Si no estás en la página "landing"
   return (
     <header className="fixed top-0 left-0 w-full bg-blue-900 text-white shadow-md z-50 h-16 bg-opacity-90 backdrop-blur-md backdrop-filter">
