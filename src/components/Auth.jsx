@@ -12,7 +12,7 @@ import {
 import InputField from "../components/InputField";
 
 function Auth() {
-  const [isLogin, setIsLogin] = useState(true); // Estado para controlar el tipo de formulario
+  const [isLogin, setIsLogin] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -56,7 +56,13 @@ function Auth() {
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogTrigger className="text-white hover:text-blue-200 transition-all duration-300 transform hover:scale-105 text-sm md:text-lg">
+        <DialogTrigger
+          className="text-white hover:text-blue-200 transition-all duration-300 transform hover:scale-105 text-sm md:text-lg"
+          onClick={() => {
+            setIsLogin(true);
+            setDialogOpen(true);
+          }}
+        >
           Iniciar Sesión
         </DialogTrigger>
         <DialogTrigger

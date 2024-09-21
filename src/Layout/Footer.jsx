@@ -1,7 +1,7 @@
 function Footer() {
   return (
-    <div className="w-full text-center text-sm text-gray-400">
-      <p>Síguenos en:</p>
+    <div className="w-full text-center text-sm text-gray-400 py-6 bg-gray-800">
+      <p className="font-semibold text-gray-200">Síguenos en:</p>
       <div className="flex justify-center space-x-4 mt-2">
         {["Facebook", "Twitter", "Instagram"].map((social) => (
           <a
@@ -16,9 +16,26 @@ function Footer() {
         ))}
       </div>
       <p className="mt-4 text-gray-500">
-        © 2024 TuMarca. Todos los derechos reservados.
+        © 2024 SplitIt. Todos los derechos reservados.
       </p>
+      <div className="mt-4 text-gray-500">
+        <a
+          href="/privacy"
+          className="hover:text-blue-400 transition duration-200"
+        >
+          Política de Privacidad
+        </a>{" "}
+        |
+        <a
+          href="/terms"
+          className="hover:text-blue-400 transition duration-200"
+        >
+          {" "}
+          Términos de Servicio
+        </a>
+      </div>
     </div>
   );
 }
+
 export default Footer;

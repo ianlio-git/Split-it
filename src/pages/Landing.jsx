@@ -56,6 +56,27 @@ function Landing() {
           </motion.p>
         </motion.div>
 
+        {!user && (
+          <div
+            className="text-center py-1"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{
+              opacity: isContentVisible ? 1 : 0,
+              scale: isContentVisible ? 1 : 0.8,
+            }}
+            transition={{ duration: 0.5 }}
+          >
+            <p className="text-xl text-gray-600 mb-3">
+              ¡Inicia sesión para comenzar!
+            </p>
+            <p className="text-sm text-gray-600 mb-3">
+              Usuario de prueba: <strong>prueba@gmail.com</strong>
+              <br />
+              Contraseña: <strong>1234</strong>
+            </p>
+          </div>
+        )}
+
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{
@@ -117,18 +138,6 @@ function Landing() {
             </motion.div>
           ))}
         </motion.div>
-
-        {/* Información adicional */}
-        <div className="text-center py-6">
-          <p className="text-xl text-gray-400 mb-2">
-            Inicia sesión para comenzar a dividir gastos con tu familia y amigos
-          </p>
-          <p className="text-sm text-gray-400">
-            Usuario de prueba: <strong>prueba@gmail.com</strong>
-            <br />
-            Contraseña: <strong>1234</strong>
-          </p>
-        </div>
       </main>
     </div>
   );
