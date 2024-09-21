@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
+import Register from "../components/Register";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -131,6 +131,14 @@ function Login() {
                 Iniciar Sesión
               </button>
             </form>
+            <div className="mt-6 text-center">
+              <p className="text-blue-200">
+                Registrate aqui!{" "}
+                <span className="text-blue-300 hover:text-blue-100 transition-colors duration-200">
+                  <Register />
+                </span>
+              </p>
+            </div>
           </DialogDescription>
         </DialogHeader>
       </DialogContent>

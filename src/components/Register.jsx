@@ -10,7 +10,7 @@ import Login from "../components/Login";
 function Register() {
   return (
     <Dialog>
-      <DialogTrigger className="text-white bg-green-700 hover:bg-green-800 transition-all duration-300 transform hover:scale-105 px-6 py-2 rounded-full text-sm md:text-lg font-semibold shadow-lg">
+      <DialogTrigger className="text-white hover:text-blue-200 transition-all duration-300 transform hover:scale-105 text-sm md:text-lg  ">
         Registrate
       </DialogTrigger>
       <DialogContent className="p-0 overflow-hidden bg-transparent rounded-3xl shadow-2xl max-w-md w-full mx-auto backdrop-blur-md backdrop-filter border-0">
