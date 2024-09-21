@@ -1,8 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import Login from "../components/Login";
-import Register from "../components/Register";
 import UserMenu from "./UserMenu";
+import Auth from "../components/Auth";
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOutIcon } from "lucide-react";
@@ -58,8 +57,7 @@ function Navbar() {
               </>
             ) : (
               <>
-                <Login />
-                <Register />
+                <Auth />
               </>
             )}
           </div>
