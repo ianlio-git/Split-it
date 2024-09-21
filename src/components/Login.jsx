@@ -133,7 +133,7 @@ function Login() {
             </form>
             <div className="mt-6 text-center">
               <p className="text-blue-200">
-                Registrate aqui!{" "}
+                Todavia no te registraste?{" "}
                 <span className="text-blue-300 hover:text-blue-100 transition-colors duration-200">
                   <Register />
                 </span>
