@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { useUser } from "../context/UserContext"; // Importa el contexto
+import { useNavigate } from "react-router-dom"; // Importa useNavigate
 
 const InputField = ({
   id,
@@ -18,7 +20,7 @@ const InputField = ({
       id={id}
       name={name}
       type={type}
-      value={value} // Mantener el valor vacío
+      value={value} // Mantener el valor actualizado
       onChange={onChange}
       placeholder={placeholder}
       className="bg-gray-700 text-white p-2 rounded-full"
@@ -27,14 +29,17 @@ const InputField = ({
 );
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
+  const { user, setUser, logout } = useUser(); // Asegúrate de obtener setUser
   const [formData, setFormData] = useState({
     name: "",
     lastname: "",
     email: "",
     avatar: "",
-    password: "", // Agregado para la nueva contraseña
+    currentPassword: "",
+    newPassword: "",
   });
+
+  const navigate = useNavigate(); // Inicializa el hook de navegación
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -43,7 +48,6 @@ export default function Profile() {
         const data = await response.json();
         if (data.users.length > 0) {
           const userData = data.users[0];
-          setUser(userData);
         }
       } catch (error) {
         console.error("Error al cargar los datos del usuario:", error);
@@ -59,20 +63,39 @@ export default function Profile() {
   };
 
   const handleSaveClick = () => {
-    console.log("Datos guardados:", formData);
+    const updatedUser = {};
+    for (const key in formData) {
+      if (formData[key] && formData[key] !== user[key]) {
+        updatedUser[key] = formData[key];
+      }
+    }
+
+    console.log("Datos guardados:", updatedUser);
     setUser((prevUser) => ({
       ...prevUser,
-      ...formData,
+      ...updatedUser,
     }));
   };
 
   const handleDeleteAccount = () => {
+    if (formData.currentPassword === "") {
+      alert("Por favor, introduzca la contraseña actual.");
+      return;
+    }
+
+    if (formData.currentPassword !== "1234") {
+      alert("La contraseña actual es incorrecta.");
+      return;
+    }
+
     console.log("Cuenta eliminada:", user);
-    setUser(null);
+    setUser(null); // Limpia el usuario
+    logout(); // Llama a la función logout
+    navigate("/"); // Redirige a la landing page
   };
 
   if (!user) {
-    return <div>Cargando...</div>;
+    return <div>Eliminando cuenta</div>;
   }
 
   return (
@@ -99,7 +122,7 @@ export default function Profile() {
             label="Foto de perfil"
             name="avatar"
             type="text"
-            value={formData.avatar} // Campo vacío
+            value={formData.avatar}
             onChange={handleInputChange}
             placeholder="Ingrese la URL de su foto de perfil"
           />
@@ -108,7 +131,7 @@ export default function Profile() {
             label="Nombre"
             name="name"
             type="text"
-            value={formData.name} // Campo vacío
+            value={formData.name}
             onChange={handleInputChange}
             placeholder="Ingrese su nombre"
           />
@@ -117,7 +140,7 @@ export default function Profile() {
             label="Apellido"
             name="lastname"
             type="text"
-            value={formData.lastname} // Campo vacío
+            value={formData.lastname}
             onChange={handleInputChange}
             placeholder="Ingrese su apellido"
           />
@@ -126,19 +149,29 @@ export default function Profile() {
             label="Correo Electrónico"
             name="email"
             type="email"
-            value={formData.email} // Campo vacío
+            value={formData.email}
             onChange={handleInputChange}
             placeholder="Ingrese su correo electrónico"
           />
           <InputField
-            id="password"
-            label="Nueva Contraseña"
-            name="password"
+            id="currentPassword"
+            label="Contraseña actual"
+            name="currentPassword"
             type="password"
-            value={formData.password} // Campo vacío
+            value={formData.currentPassword}
             onChange={handleInputChange}
-            placeholder="Ingrese su nueva Contraseña"
+            placeholder="Ingrese su contraseña actual"
           />
+          <InputField
+            id="newPassword"
+            label="Nueva Contraseña"
+            name="newPassword"
+            type="password"
+            value={formData.newPassword}
+            onChange={handleInputChange}
+            placeholder="Ingrese su nueva contraseña"
+          />
+
           <Button
             onClick={handleSaveClick}
             className="mt-4 bg-green-700 hover:bg-green-800 rounded-full"

@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 
 export default function UserMenu() {
   const navigate = useNavigate();
-  const { user, logout } = useUser(); // Use the useUser hook to get user and logout
+  const { user, logout } = useUser();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -32,8 +32,10 @@ export default function UserMenu() {
     avatar: "",
   });
 
+  // Estado para controlar la visibilidad del menú
+  const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
-    // Cargar datos del usuario desde el archivo JSON
     const fetchUser = async () => {
       try {
         const response = await fetch("/users.json");
@@ -66,10 +68,22 @@ export default function UserMenu() {
     { label: "Amigos", icon: HeartIcon, onClick: () => navigate("/friends") },
   ];
 
+  const closeMenu = () => {
+    setIsOpen(false); // Cerrar el menú
+  };
+
+  const handleMenuItemClick = (onClick) => {
+    onClick();
+    closeMenu(); // Cerrar el menú al hacer clic
+  };
+
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <button className="relative flex items-center space-xl-2 bg-transparent hover:bg-transparent">
+        <button
+          className="relative flex items-center space-xl-2 bg-transparent hover:bg-transparent"
+          onClick={() => setIsOpen(true)} // Abrir el menú al hacer clic
+        >
           <AlignJustify />
         </button>
       </SheetTrigger>
@@ -103,7 +117,7 @@ export default function UserMenu() {
               key={index}
               icon={item.icon}
               label={item.label}
-              onClick={item.onClick}
+              onClick={() => handleMenuItemClick(item.onClick)}
             />
           ))}
         </div>
