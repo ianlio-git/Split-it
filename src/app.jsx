@@ -2,11 +2,13 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
-import LandingPage from "./pages/Landing";
+import Landing from "./pages/Landing";
 import Main from "./pages/Main";
 import Groups from "./pages/Groups";
 import Profile from "./pages/Profile";
 import Friends from "./pages/Friends";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 import Navbar from "./Layout/Navbar";
 import ProtectedRoute from "./context/ProtectedRoute"; // Importa el componente
 
@@ -19,7 +21,7 @@ const App = () => {
         <Navbar />
         <main className="flex-1 mt-[4rem]">
           <Routes>
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<Landing />} />
             <Route
               path="/main"
               element={<ProtectedRoute element={<Main />} />}
@@ -36,6 +38,9 @@ const App = () => {
               path="/friends"
               element={<ProtectedRoute element={<Friends />} />}
             />
+            {/* Corregido: Asignar rutas únicas a Privacy y Terms */}
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
           </Routes>
         </main>
       </div>
