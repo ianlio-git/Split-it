@@ -32,7 +32,6 @@ export default function UserMenu() {
     avatar: "",
   });
 
-  // Estado para controlar la visibilidad del menú
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -65,16 +64,24 @@ export default function UserMenu() {
   const menuItems = [
     { label: "Perfil", icon: UserIcon, onClick: () => navigate("/profile") },
     { label: "Grupos", icon: UsersIcon, onClick: () => navigate("/groups") },
-    { label: "Amigos", icon: HeartIcon, onClick: () => navigate("/friends") },
+    {
+      label: "Amigos",
+      icon: () => (
+        <span style={{ color: "red" }}>
+          <HeartIcon />
+        </span>
+      ), // Renderizando el icono en rojo
+      onClick: () => navigate("/friends"),
+    },
   ];
 
   const closeMenu = () => {
-    setIsOpen(false); // Cerrar el menú
+    setIsOpen(false);
   };
 
   const handleMenuItemClick = (onClick) => {
     onClick();
-    closeMenu(); // Cerrar el menú al hacer clic
+    closeMenu();
   };
 
   return (
@@ -82,7 +89,7 @@ export default function UserMenu() {
       <SheetTrigger asChild>
         <button
           className="relative flex items-center space-xl-2 bg-transparent hover:bg-transparent"
-          onClick={() => setIsOpen(true)} // Abrir el menú al hacer clic
+          onClick={() => setIsOpen(true)}
         >
           <AlignJustify />
         </button>
@@ -115,7 +122,7 @@ export default function UserMenu() {
           {menuItems.map((item, index) => (
             <MenuItemButton
               key={index}
-              icon={item.icon}
+              icon={item.icon} // Asegúrate de que MenuItemButton acepte un componente
               label={item.label}
               onClick={() => handleMenuItemClick(item.onClick)}
             />
