@@ -39,6 +39,8 @@ export default function Profile() {
     newPassword: "",
   });
 
+  const [currentUserData, setCurrentUserData] = useState(null); // Para almacenar los datos actuales del usuario
+
   const navigate = useNavigate(); // Inicializa el hook de navegación
 
   useEffect(() => {
@@ -48,6 +50,16 @@ export default function Profile() {
         const data = await response.json();
         if (data.users.length > 0) {
           const userData = data.users[0];
+          setCurrentUserData(userData); // Almacena los datos actuales del usuario
+          // También actualizar el estado del formulario con los datos actuales
+          setFormData({
+            name: "",
+            lastname: "",
+            email: "",
+            avatar: "",
+            currentPassword: "",
+            newPassword: "",
+          });
         }
       } catch (error) {
         console.error("Error al cargar los datos del usuario:", error);
@@ -63,18 +75,53 @@ export default function Profile() {
   };
 
   const handleSaveClick = () => {
-    const updatedUser = {};
-    for (const key in formData) {
-      if (formData[key] && formData[key] !== user[key]) {
-        updatedUser[key] = formData[key];
+    // Preparamos el objeto de datos a actualizar
+    const updatedUser = { ...currentUserData }; // Comenzamos con los datos actuales
+    let changes = []; // Array para almacenar los cambios realizados
+
+    // Solo se pide la contraseña si se intenta cambiar el email o la contraseña
+    if (formData.email || formData.newPassword) {
+      if (formData.currentPassword !== "1234") {
+        alert(
+          "La contraseña actual es incorrecta. No se pueden realizar cambios en el correo electrónico o la contraseña."
+        );
+        return; // Salir del método si la contraseña no es correcta
       }
     }
 
-    console.log("Datos guardados:", updatedUser);
-    setUser((prevUser) => ({
-      ...prevUser,
-      ...updatedUser,
-    }));
+    // Actualizamos solo si los campos del formulario tienen datos
+    if (formData.name) {
+      updatedUser.name = formData.name;
+      changes.push(`Nombre: ${formData.name}`);
+    }
+    if (formData.lastname) {
+      updatedUser.lastname = formData.lastname;
+      changes.push(`Apellido: ${formData.lastname}`);
+    }
+    if (formData.email) {
+      updatedUser.email = formData.email;
+      changes.push(`Correo Electrónico: ${formData.email}`);
+    }
+    if (formData.avatar) {
+      updatedUser.avatar = formData.avatar;
+      changes.push(`Foto de perfil: ${formData.avatar}`);
+    }
+    if (formData.newPassword) {
+      updatedUser.password = formData.newPassword; // Asegúrate de manejar la contraseña nueva adecuadamente
+      changes.push(`Nueva Contraseña establecida`); // Mensaje genérico
+    }
+
+    // Si se realizaron cambios, actualizamos el usuario en el contexto
+    if (changes.length > 0) {
+      alert(
+        `Datos guardados! Se han realizado los siguientes cambios: ${changes.join(
+          ", "
+        )}`
+      );
+      setUser(updatedUser); // Actualiza el usuario en el contexto
+    } else {
+      alert("No se realizaron cambios.");
+    }
   };
 
   const handleDeleteAccount = () => {
@@ -88,14 +135,14 @@ export default function Profile() {
       return;
     }
 
-    console.log("Cuenta eliminada:", user);
+    console.log("Cuenta eliminada:", currentUserData);
     setUser(null); // Limpia el usuario
     logout(); // Llama a la función logout
     navigate("/"); // Redirige a la landing page
   };
 
-  if (!user) {
-    return <div>Eliminando cuenta</div>;
+  if (!currentUserData) {
+    return <div>Cargando datos del usuario...</div>; // Mostrar un mensaje de carga
   }
 
   return (
@@ -103,15 +150,16 @@ export default function Profile() {
       <div className="max-w-xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
         <div className="flex items-center space-x-4">
           <img
-            src={user.avatar}
+            src={currentUserData.avatar} // Mostrar el avatar actual
             alt="Avatar"
             className="w-24 h-24 rounded-full object-cover"
           />
           <div>
             <h1 className="text-2xl font-bold">
-              {user.name} {user.lastname}
+              {currentUserData.name} {currentUserData.lastname}{" "}
+              {/* Mostrar nombre y apellido actuales */}
             </h1>
-            <p className="text-gray-400">{user.email}</p>
+            <p className="text-gray-400">{currentUserData.email}</p>
           </div>
         </div>
 
@@ -122,7 +170,7 @@ export default function Profile() {
             label="Foto de perfil"
             name="avatar"
             type="text"
-            value={formData.avatar}
+            value={formData.avatar} // Mantener el campo vacío
             onChange={handleInputChange}
             placeholder="Ingrese la URL de su foto de perfil"
           />
@@ -131,7 +179,7 @@ export default function Profile() {
             label="Nombre"
             name="name"
             type="text"
-            value={formData.name}
+            value={formData.name} // Mantener el campo vacío
             onChange={handleInputChange}
             placeholder="Ingrese su nombre"
           />
@@ -140,7 +188,7 @@ export default function Profile() {
             label="Apellido"
             name="lastname"
             type="text"
-            value={formData.lastname}
+            value={formData.lastname} // Mantener el campo vacío
             onChange={handleInputChange}
             placeholder="Ingrese su apellido"
           />
@@ -149,7 +197,7 @@ export default function Profile() {
             label="Correo Electrónico"
             name="email"
             type="email"
-            value={formData.email}
+            value={formData.email} // Mantener el campo vacío
             onChange={handleInputChange}
             placeholder="Ingrese su correo electrónico"
           />
@@ -158,7 +206,7 @@ export default function Profile() {
             label="Contraseña actual"
             name="currentPassword"
             type="password"
-            value={formData.currentPassword}
+            value={formData.currentPassword} // Mantener el campo vacío
             onChange={handleInputChange}
             placeholder="Ingrese su contraseña actual"
           />
@@ -167,7 +215,7 @@ export default function Profile() {
             label="Nueva Contraseña"
             name="newPassword"
             type="password"
-            value={formData.newPassword}
+            value={formData.newPassword} // Mantener el campo vacío
             onChange={handleInputChange}
             placeholder="Ingrese su nueva contraseña"
           />
