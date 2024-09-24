@@ -69,7 +69,7 @@ export default function InviteFriend({ onInvite }) {
           onClick={handleSubmit}
           className="mt-4 bg-green-700 hover:bg-green-800 w-full rounded-full"
         >
-          Enviar invitación
+          Añadir amigo
         </Button>
       </DialogContent>
     </Dialog>
