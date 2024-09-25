@@ -15,23 +15,20 @@ import { Label } from "../components/ui/label";
 export default function CreateGroup({ onSubmit }) {
   const [newGroup, setNewGroup] = useState({
     name: "",
-    type: "Viaje",
+    type: "",
   });
 
   const [isOpen, setIsOpen] = useState(false);
 
   const handleInputChange = (e) => {
-    setNewGroup({ ...newGroup, name: e.target.value });
-  };
-
-  const handleTypeChange = (type) => {
-    setNewGroup({ ...newGroup, type });
+    const { name, value } = e.target;
+    setNewGroup((prevGroup) => ({ ...prevGroup, [name]: value }));
   };
 
   const handleSubmit = () => {
-    if (newGroup.name) {
+    if (newGroup.name && newGroup.type) {
       onSubmit(newGroup);
-      setNewGroup({ name: "", type: "Viaje" });
+      setNewGroup({ name: "", type: "" });
       setIsOpen(false);
     }
   };
@@ -52,29 +49,23 @@ export default function CreateGroup({ onSubmit }) {
             <Label htmlFor="groupName">Nombre del grupo</Label>
             <Input
               id="groupName"
+              name="name"
               value={newGroup.name}
               onChange={handleInputChange}
               className="bg-gray-700 text-white rounded-full"
             />
           </div>
+        </div>    
+        <div className="space-y-4">
           <div>
-            <Label>Tipo</Label>
-            <div className="flex space-x-2 mt-2">
-              {["Viaje", "Hogar", "Pareja", "Otro"].map((type) => (
-                <Button
-                  key={type}
-                  onClick={() => handleTypeChange(type)}
-                  variant={newGroup.type === type ? "default" : "outline"}
-                  className={
-                    newGroup.type === type
-                      ? "bg-blue-500 rounded-full"
-                      : "bg-gray-700 rounded-full"
-                  }
-                >
-                  {type}
-                </Button>
-              ))}
-            </div>
+            <Label htmlFor="groupType">Tipo de grupo</Label>
+            <Input
+              id="groupType"
+              name="type"
+              value={newGroup.type}
+              onChange={handleInputChange}
+              className="bg-gray-700 text-white rounded-full"
+            />
           </div>
         </div>
         <Button
