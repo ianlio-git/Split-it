@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
 import {
   Dialog,
@@ -26,9 +25,10 @@ export default function InviteFriend({ onInvite }) {
 
   const handleSubmit = () => {
     if (newFriend.name && newFriend.email) {
-      onInvite(newFriend);
-      setNewFriend({ name: "", email: "" });
-      setIsOpen(false);
+      const friendWithState = { ...newFriend, state: "Pending" }; // Ensure "Pending" state
+      onInvite(friendWithState); // Pass the new friend with the state
+      setNewFriend({ name: "", email: "" }); // Clear the form
+      setIsOpen(false); // Close the dialog
     }
   };
 
@@ -45,7 +45,7 @@ export default function InviteFriend({ onInvite }) {
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="friendName">Nombre del amigo</Label>
+            <Label htmlFor="friendName">¿Cómo se llama tu amigo?</Label>
             <Input
               id="friendName"
               name="name"
@@ -65,6 +65,7 @@ export default function InviteFriend({ onInvite }) {
             />
           </div>
         </div>
+
         <Button
           onClick={handleSubmit}
           className="mt-4 bg-green-700 hover:bg-green-800 w-full rounded-full"

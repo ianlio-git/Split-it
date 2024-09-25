@@ -2,21 +2,25 @@
   {
     "id": 1,
     "name": "Juan Pérez",
-    "email": "juan.perez@example.com"
+    "email": "juan.perez@example.com",
+    "state": "Pending"
   },
   {
     "id": 2,
     "name": "María Gómez",
-    "email": "maria.gomez@example.com"
+    "email": "maria.gomez@example.com",
+    "state": "Pending"
   },
   {
     "id": 3,
     "name": "Carlos Martínez",
-    "email": "carlos.martinez@example.com"
+    "email": "carlos.martinez@example.com",
+    "state": "Accepted"
   },
   {
     "id": 4,
     "name": "Ana Fernández",
-    "email": "ana.fernandez@example.com"
+    "email": "ana.fernandez@example.com",
+    "state": "Pending"
   }
 ]
