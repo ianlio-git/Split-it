@@ -20,6 +20,8 @@ function Auth() {
   const [users, setUsers] = useState([]);
   const { login } = useUser();
   const [dialogOpen, setDialogOpen] = useState(false); // Controlar la apertura del diálogo
+  const [forgotPasswordDialogOpen, setForgotPasswordDialogOpen] =
+    useState(false); // Nuevo estado para el diálogo de recuperación
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +53,13 @@ function Auth() {
   const handleRegister = (e) => {
     e.preventDefault();
     console.log("Registrando usuario:", { name, email, password });
+  };
+
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+    console.log("Recuperar contraseña para el email:", email);
+    // Aquí podrías añadir la lógica para enviar un email de recuperación
+    setForgotPasswordDialogOpen(false); // Cierra el diálogo después de enviar
   };
 
   return (
@@ -134,7 +143,45 @@ function Auth() {
                     {isLogin ? "Registrate" : "Iniciar Sesión"}
                   </span>
                 </p>
+                {isLogin && (
+                  <p
+                    className="text-blue-300 mt-2 cursor-pointer"
+                    onClick={() => setForgotPasswordDialogOpen(true)}
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </p>
+                )}
               </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Diálogo para recuperar contraseña */}
+      <Dialog
+        open={forgotPasswordDialogOpen}
+        onOpenChange={setForgotPasswordDialogOpen}
+      >
+        <DialogContent className="p-0 overflow-hidden bg-transparent rounded-3xl shadow-2xl max-w-md w-full mx-auto backdrop-blur-md backdrop-filter border-0">
+          <DialogHeader className="p-8 bg-gray-900 bg-opacity-40">
+            <DialogTitle className="text-3xl font-bold text-center text-white mb-6">
+              Recuperar Contraseña
+            </DialogTitle>
+            <DialogDescription>
+              <form className="space-y-6" onSubmit={handleForgotPassword}>
+                <InputField
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Introduce tu correo electrónico"
+                />
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Enviar
+                </button>
+              </form>
             </DialogDescription>
           </DialogHeader>
         </DialogContent>

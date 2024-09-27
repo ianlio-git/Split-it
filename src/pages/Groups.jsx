@@ -9,6 +9,8 @@ import {
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
+
+import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,6 +21,7 @@ import {
 import CreateGroupDialog from "../components/CreateGroup";
 import Gastos from "../components/Gastos";
 import CreateGroup from "../components/CreateGroup";
+import ImageViewer from "../components/ImageViewer";
 
 export default function Groups() {
   const [groups, setGroups] = useState([]);
@@ -68,36 +71,33 @@ export default function Groups() {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
-        <div className="md:hidden mb-4">
-          <Collapsible
-            open={isGroupsOpen}
-            onOpenChange={setIsGroupsOpen}
-            className="w-full"
-          >
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full flex justify-between items-center"
-              >
-                <span>Mis Grupos</span>
-                {isGroupsOpen ? <FaChevronUp /> : <FaChevronDown />}
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-2">
-              <GroupsList
-                groups={groups}
-                selectedGroup={selectedGroup}
-                handleSelectGroup={handleSelectGroup}
-              />
-              <CreateGroup className="w-full mt-2" />
-            </CollapsibleContent>
-          </Collapsible>
-        </div>
+        <Collapsible
+          open={isGroupsOpen}
+          onOpenChange={setIsGroupsOpen}
+          className="md:hidden mb-4"
+        >
+          <CollapsibleTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full flex justify-between items-center"
+            >
+              <span>Mis Grupos</span>
+              {isGroupsOpen ? <FaChevronUp /> : <FaChevronDown />}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-2">
+            <GroupsList
+              groups={groups}
+              selectedGroup={selectedGroup}
+              handleSelectGroup={handleSelectGroup}
+            />
+          </CollapsibleContent>
+        </Collapsible>
 
         <Collapsible
           open={isFriendsOpen}
           onOpenChange={setIsFriendsOpen}
-          className="md:hidden mb-4"
+          className="md:hidden"
         >
           <CollapsibleTrigger asChild>
             <Button
@@ -116,17 +116,22 @@ export default function Groups() {
           </CollapsibleContent>
         </Collapsible>
 
+        {/* Botón Agregar Grupo en Móvil */}
+        <div className="md:hidden mb-4">
+          <CreateGroup className="w-full" />
+        </div>
+
         <div className="hidden md:block">
           <div className="bg-gray-50 p-6 rounded-lg">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-800">Mis Grupos</h2>
+              <CreateGroup className="ml-4" />
             </div>
             <GroupsList
               groups={groups}
               selectedGroup={selectedGroup}
               handleSelectGroup={handleSelectGroup}
             />
-            <CreateGroup className="w-full mt-4" />
             <h2 className="text-xl font-bold mb-4 mt-6 text-gray-800">
               Mis Amigos
             </h2>
@@ -155,16 +160,27 @@ export default function Groups() {
               {gastos.map((gasto, index) => (
                 <div
                   key={index}
-                  className="flex items-center border p-4 bg-white rounded-lg shadow-sm transition-all hover:shadow-md"
+                  className="flex flex-col md:flex-row items-center border p-4 bg-white rounded-lg shadow-sm transition-all hover:shadow-md"
                 >
-                  <FaTicketAlt className="text-gray-800 mr-4 text-4xl" />
+                  <FaTicketAlt className="text-gray-800 mr-4 text-4xl mb-2 md:mb-0" />
                   <div className="flex-1">
                     <p className="font-bold text-lg text-gray-800">
                       {gasto.description}
                     </p>
-                    <p className="text-gray-600">Pago: ${gasto.payment}</p>
+                    <p className="text-gray-600">
+                      Pago total: ${gasto.payment}
+                    </p>
                     <p className="text-gray-600">Estado: Pendiente</p>
                     <p className="text-gray-600">Fecha: {gasto.date}</p>
+                    <p className="text-gray-600">
+                      Diego pagó: {gasto.payment / 2}
+                    </p>
+                    <p className="text-gray-600">
+                      Tú debes: {gasto.payment / 2}
+                    </p>
+                  </div>
+                  <div className="flex justify-center items-center ml-4">
+                    <ImageViewer imageSrc="https://media.infocielo.com/p/780432ea548b27cfd7e58f79c482f43c/adjuntos/299/imagenes/001/385/0001385644/1200x675/smart/ticket-comprajpg.jpg" />
                   </div>
                 </div>
               ))}

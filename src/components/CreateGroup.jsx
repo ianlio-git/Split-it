@@ -38,43 +38,53 @@ export default function CreateGroup({ onSubmit, className }) {
         <Button
           size="sm"
           variant="outline"
-          className={`flex items-center ${className}`}
+          className={`flex items-center px-2 py-1 text-black border-black border ${className}`}
         >
-          <FaPlus className="mr-1" />
+          <FaPlus className="mr-1 h-3 w-3" />
           Crear Grupo
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-gray-800 text-white">
+      <DialogContent className="bg-white text-black sm:max-w-[425px] rounded-lg shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-center">Crear un grupo</DialogTitle>
+          <DialogTitle className="text-center text-lg font-semibold">
+            Crear un grupo
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="groupName">Nombre del grupo</Label>
+            <Label htmlFor="groupName" className="text-sm font-medium">
+              Nombre del grupo
+            </Label>
             <Input
               id="groupName"
               name="name"
               value={newGroup.name}
               onChange={handleInputChange}
-              className="bg-gray-700 text-white rounded-full"
+              className="border border-gray-300 text-black rounded-lg px-3 py-2"
+              placeholder="Ingresa el nombre del grupo"
+              required
             />
           </div>
         </div>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="groupType">Descripción</Label>
+            <Label htmlFor="groupType" className="text-sm font-medium">
+              Descripción
+            </Label>
             <Input
               id="groupType"
               name="type"
               value={newGroup.type}
               onChange={handleInputChange}
-              className="bg-gray-700 text-white rounded-full"
+              className="border border-gray-300 text-black rounded-lg px-3 py-2"
+              placeholder="Ingresa una descripción"
+              required
             />
           </div>
         </div>
         <Button
           onClick={handleSubmit}
-          className="mt-4 bg-green-700 hover:bg-green-800 w-full rounded-full"
+          className="mt-4 bg-black text-white w-full py-2 rounded-lg"
         >
           Listo
         </Button>

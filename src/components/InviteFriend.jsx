@@ -26,53 +26,63 @@ export default function InviteFriend({ onInvite }) {
 
   const handleSubmit = () => {
     if (newFriend.name && newFriend.email) {
-      const friendWithState = { ...newFriend, state: "Pending" }; // Ensure "Pending" state
-      onInvite(friendWithState); // Pass the new friend with the state
-      setNewFriend({ name: "", email: "" }); // Clear the form
-      setIsOpen(false); // Close the dialog
+      const friendWithState = { ...newFriend, state: "Pending" }; // Asegurar el estado "Pending"
+      onInvite(friendWithState); // Pasar el nuevo amigo con el estado
+      setNewFriend({ name: "", email: "" }); // Limpiar el formulario
+      setIsOpen(false); // Cerrar el diálogo
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div className="bg-white rounded-3xl p-4 shadow-lg backdrop-blur-md backdrop-filter flex justify-center items-center cursor-pointer">
-          <h2 className="text-2xl font-semibold text-blue-800 flex items-center">
-            <FaUserPlus className="mr-2 text-blue-600" />
+        <div className="bg-white rounded-lg p-4 shadow-lg flex justify-center items-center cursor-pointer">
+          <h2 className="text-2xl font-semibold text-black flex items-center">
+            <FaUserPlus className="mr-2 text-black" />
             Invitar Amigo
           </h2>
         </div>
       </DialogTrigger>
-      <DialogContent className="bg-gray-800 text-white">
+      <DialogContent className="bg-white text-black sm:max-w-[425px] rounded-lg shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-center">Invitar a un amigo</DialogTitle>
+          <DialogTitle className="text-center text-lg font-semibold">
+            Invitar a un amigo
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="friendName">¿Cómo se llama tu amigo?</Label>
+            <Label htmlFor="friendName" className="text-sm font-medium">
+              ¿Cómo se llama tu amigo?
+            </Label>
             <Input
               id="friendName"
               name="name"
               value={newFriend.name}
               onChange={handleInputChange}
-              className="bg-gray-700 text-white rounded-full"
+              className="border border-gray-300 text-black rounded-lg px-3 py-2"
+              placeholder="Ingresa el nombre de tu amigo"
+              required
             />
           </div>
           <div>
-            <Label htmlFor="friendEmail">Correo electrónico</Label>
+            <Label htmlFor="friendEmail" className="text-sm font-medium">
+              Correo electrónico
+            </Label>
             <Input
               id="friendEmail"
               name="email"
               value={newFriend.email}
               onChange={handleInputChange}
-              className="bg-gray-700 text-white rounded-full"
+              className="border border-gray-300 text-black rounded-lg px-3 py-2"
+              placeholder="Ingresa el correo electrónico"
+              required
             />
           </div>
         </div>
 
         <Button
           onClick={handleSubmit}
-          className="mt-4 bg-green-700 hover:bg-green-800 w-full rounded-full"
+          className="mt-4 bg-black text-white w-full py-2 rounded-lg"
         >
           Añadir amigo
         </Button>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaCheckCircle, FaSpinner, FaUserPlus } from "react-icons/fa";
+import { FaCheckCircle, FaSpinner } from "react-icons/fa";
 import InviteFriend from "../components/InviteFriend";
 
 export default function Friends() {
@@ -44,9 +44,9 @@ export default function Friends() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white p-8">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-center text-blue-800">
+        <h1 className="text-4xl font-bold mb-8 text-center text-black">
           Mis Amigos
         </h1>
 
@@ -55,7 +55,7 @@ export default function Friends() {
             friends.map((friend) => (
               <div
                 key={friend.id}
-                className="bg-white rounded-3xl p-4 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center space-x-4"
+                className="bg-white rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center space-x-4"
               >
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-xl font-bold text-white">
@@ -63,7 +63,7 @@ export default function Friends() {
                   </span>
                 </div>
                 <div className="flex-grow">
-                  <h2 className="font-semibold text-lg text-blue-800">
+                  <h2 className="font-semibold text-lg text-black">
                     {friend.name}
                   </h2>
                   <p className="text-sm text-gray-600">{friend.email}</p>
