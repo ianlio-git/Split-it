@@ -9,6 +9,7 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { FaUserPlus } from "react-icons/fa";
 
 export default function InviteFriend({ onInvite }) {
   const [newFriend, setNewFriend] = useState({
@@ -35,9 +36,12 @@ export default function InviteFriend({ onInvite }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="mt-6 mx-auto bg-green-700 hover:bg-green-800 block rounded-full">
-          Invitar a un amigo
-        </Button>
+        <div className="bg-white rounded-3xl p-4 shadow-lg backdrop-blur-md backdrop-filter flex justify-center items-center cursor-pointer">
+          <h2 className="text-2xl font-semibold text-blue-800 flex items-center">
+            <FaUserPlus className="mr-2 text-blue-600" />
+            Invitar Amigo
+          </h2>
+        </div>
       </DialogTrigger>
       <DialogContent className="bg-gray-800 text-white">
         <DialogHeader>
