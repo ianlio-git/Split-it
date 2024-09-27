@@ -66,7 +66,46 @@ export default function Groups() {
   };
 
   const handleAddFriendToGroup = (friendName) => {
-    alert(`${friendName} fue añadido al grupo seleccionado`);
+    if (!selectedGroup) {
+      alert("Por favor, selecciona un grupo primero.");
+      return;
+    }
+
+    // Verifica si el amigo ya está en el grupo
+    const isAlreadyInGroup = selectedGroup.members.some(
+      (member) => member.name === friendName
+    );
+
+    if (isAlreadyInGroup) {
+      alert(`${friendName} ya está en el grupo.`);
+      return;
+    }
+
+    // Crear un nuevo miembro con saldo inicial de 0
+    const newMember = {
+      id: Date.now(), // ID único
+      name: friendName,
+      balance: 0,
+      image: "https://via.placeholder.com/40", // Placeholder para imagen, puedes cambiarlo
+    };
+
+    // Actualizar el grupo con el nuevo miembro
+    const updatedGroup = {
+      ...selectedGroup,
+      members: [...selectedGroup.members, newMember],
+    };
+
+    // Actualizar los grupos en el estado
+    setGroups((prevGroups) =>
+      prevGroups.map((group) =>
+        group.id === selectedGroup.id ? updatedGroup : group
+      )
+    );
+
+    // Actualizar el grupo seleccionado
+    setSelectedGroup(updatedGroup);
+
+    alert(`${friendName} fue añadido al grupo ${selectedGroup.name}`);
   };
 
   const handleAddGasto = (newGasto) => {
@@ -75,7 +114,9 @@ export default function Groups() {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
+      {/* Panel Lateral Izquierdo */}
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
+        {/* Collapsible para Grupos en Móvil */}
         <Collapsible
           open={isGroupsOpen}
           onOpenChange={setIsGroupsOpen}
@@ -99,6 +140,7 @@ export default function Groups() {
           </CollapsibleContent>
         </Collapsible>
 
+        {/* Collapsible para Amigos en Móvil */}
         <Collapsible
           open={isFriendsOpen}
           onOpenChange={setIsFriendsOpen}
@@ -126,6 +168,7 @@ export default function Groups() {
           <CreateGroup className="w-full" onCreateGroup={handleCreateGroup} />
         </div>
 
+        {/* Panel Lateral Izquierdo en Pantallas Grandes */}
         <div className="hidden md:block">
           <div className="bg-gray-50 p-6 rounded-lg">
             <div className="flex justify-between items-center mb-6">
@@ -148,6 +191,7 @@ export default function Groups() {
         </div>
       </div>
 
+      {/* Panel Central */}
       <div className="w-full md:w-2/4 p-4 bg-white shadow-md">
         {selectedGroup ? (
           <div>
@@ -199,6 +243,7 @@ export default function Groups() {
         )}
       </div>
 
+      {/* Panel Lateral Derecho para Saldos del Grupo */}
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
         <div className="flex items-center mb-4">
           <FaMoneyBillWave className="text-gray-600 mr-2 text-2xl" />
@@ -240,6 +285,7 @@ export default function Groups() {
   );
 }
 
+// Lista de Grupos
 function GroupsList({ groups, selectedGroup, handleSelectGroup }) {
   return (
     <ul className="space-y-3 mb-6">
@@ -264,6 +310,7 @@ function GroupsList({ groups, selectedGroup, handleSelectGroup }) {
   );
 }
 
+// Lista de Amigos
 function FriendsList({ friends, handleAddFriendToGroup }) {
   return (
     <ul className="space-y-2">
