@@ -173,10 +173,11 @@ export default function Groups() {
                     <p className="text-gray-600">Estado: Pendiente</p>
                     <p className="text-gray-600">Fecha: {gasto.date}</p>
                     <p className="text-gray-600">
-                      Diego pagó: {gasto.payment / 2}
+                      Diego pagó: {gasto.payment * (gasto.percentage / 100)}
                     </p>
                     <p className="text-gray-600">
-                      Tú debes: {gasto.payment / 2}
+                      Tú debes:{" "}
+                      {gasto.payment - gasto.payment * (gasto.percentage / 100)}
                     </p>
                   </div>
                   <div className="flex justify-center items-center ml-4">

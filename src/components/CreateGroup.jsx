@@ -11,23 +11,14 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { FaPlus } from "react-icons/fa";
 
-export default function CreateGroup({ onSubmit, className }) {
-  const [newGroup, setNewGroup] = useState({
-    name: "",
-    type: "",
-  });
-
+export default function CreateGroup({ className }) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewGroup((prevGroup) => ({ ...prevGroup, [name]: value }));
-  };
+  const [groupName, setGroupName] = useState("");
+  const [groupType, setGroupType] = useState("");
 
   const handleSubmit = () => {
-    if (newGroup.name && newGroup.type) {
-      onSubmit(newGroup);
-      setNewGroup({ name: "", type: "" });
+    if (groupName && groupType) {
+      alert(`Grupo "${groupName}" añadido`);
       setIsOpen(false);
     }
   };
@@ -57,12 +48,10 @@ export default function CreateGroup({ onSubmit, className }) {
             </Label>
             <Input
               id="groupName"
-              name="name"
-              value={newGroup.name}
-              onChange={handleInputChange}
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
               className="border border-gray-300 text-black rounded-lg px-3 py-2"
               placeholder="Ingresa el nombre del grupo"
-              required
             />
           </div>
         </div>
@@ -73,12 +62,10 @@ export default function CreateGroup({ onSubmit, className }) {
             </Label>
             <Input
               id="groupType"
-              name="type"
-              value={newGroup.type}
-              onChange={handleInputChange}
+              value={groupType}
+              onChange={(e) => setGroupType(e.target.value)}
               className="border border-gray-300 text-black rounded-lg px-3 py-2"
               placeholder="Ingresa una descripción"
-              required
             />
           </div>
         </div>

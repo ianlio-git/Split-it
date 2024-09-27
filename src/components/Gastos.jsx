@@ -16,7 +16,7 @@ const Gastos = ({ onAddGasto }) => {
   const [payment, setPayment] = useState("");
   const [date, setDate] = useState("");
   const [image, setImage] = useState(null); // Estado para la imagen
-  const [percentage, setPercentage] = useState(""); // Estado para el porcentaje
+  const [percentage, setPercentage] = useState("50"); // Valor predeterminado al 50%
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleSubmit = (e) => {
@@ -33,7 +33,7 @@ const Gastos = ({ onAddGasto }) => {
     setPayment("");
     setDate("");
     setImage(null); // Reiniciar el estado de la imagen
-    setPercentage(""); // Reiniciar el estado del porcentaje
+    setPercentage("50"); // Reiniciar el estado del porcentaje al valor predeterminado
     setDialogOpen(false);
   };
 
@@ -113,9 +113,10 @@ const Gastos = ({ onAddGasto }) => {
               placeholder="Introduce el porcentaje"
               value={percentage}
               onChange={(e) => setPercentage(e.target.value)}
-              min="0"
+              min="1"
               max="100"
-              step="0.01"
+              step="1"
+              required
             />
           </div>
           <Button type="submit" className="w-full">
