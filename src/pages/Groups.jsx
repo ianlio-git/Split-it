@@ -68,11 +68,11 @@ export default function Groups() {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
-        <div className="md:hidden mb-4 flex justify-between items-center">
+        <div className="md:hidden mb-4">
           <Collapsible
             open={isGroupsOpen}
             onOpenChange={setIsGroupsOpen}
-            className="flex-grow mr-2"
+            className="w-full"
           >
             <CollapsibleTrigger asChild>
               <Button
@@ -89,9 +89,9 @@ export default function Groups() {
                 selectedGroup={selectedGroup}
                 handleSelectGroup={handleSelectGroup}
               />
+              <CreateGroup className="w-full mt-2" />
             </CollapsibleContent>
           </Collapsible>
-          <CreateGroup />
         </div>
 
         <Collapsible
@@ -120,13 +120,13 @@ export default function Groups() {
           <div className="bg-gray-50 p-6 rounded-lg">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-800">Mis Grupos</h2>
-              <CreateGroup className="ml-4" />
             </div>
             <GroupsList
               groups={groups}
               selectedGroup={selectedGroup}
               handleSelectGroup={handleSelectGroup}
             />
+            <CreateGroup className="w-full mt-4" />
             <h2 className="text-xl font-bold mb-4 mt-6 text-gray-800">
               Mis Amigos
             </h2>

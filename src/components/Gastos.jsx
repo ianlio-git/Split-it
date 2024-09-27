@@ -7,79 +7,90 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { FaPlus } from "react-icons/fa";
 
 const Gastos = ({ onAddGasto }) => {
   const [description, setDescription] = useState("");
   const [payment, setPayment] = useState("");
-  const [state, setState] = useState("");
   const [date, setDate] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false); // Controlar la apertura del diálogo
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const newGasto = {
       description,
       payment,
-      state,
       date,
     };
     onAddGasto(newGasto);
-    // Reiniciar los campos
     setDescription("");
     setPayment("");
-    setState("");
     setDate("");
-    setDialogOpen(false); // Cerrar el diálogo
+    setDialogOpen(false);
   };
 
   return (
-    <>
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogTrigger className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full">
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" className="px-2 py-1">
+          <FaPlus className="mr-1 h-3 w-3" />
           Añadir Gasto
-        </DialogTrigger>
-        <DialogContent className="p-0 overflow-hidden bg-transparent rounded-3xl shadow-2xl max-w-md w-full mx-auto backdrop-blur-md backdrop-filter border-0">
-          <DialogHeader className="p-8 bg-gray-900 bg-opacity-40">
-            <DialogTitle className="text-3xl font-bold text-center text-white mb-6">
-              Añadir Gasto
-            </DialogTitle>
-            <DialogDescription>
-              <form className="space-y-6" onSubmit={handleSubmit}>
-                <input
-                  type="text"
-                  placeholder="Descripción"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full p-2 border border-gray-400 rounded"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Pago"
-                  value={payment}
-                  onChange={(e) => setPayment(e.target.value)}
-                  className="w-full p-2 border border-gray-400 rounded"
-                  required
-                />
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full p-2 border border-gray-400 rounded"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-2 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none"
-                >
-                  Añadir Gasto
-                </button>
-              </form>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-    </>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Añadir Gasto</DialogTitle>
+          <DialogDescription>
+            Ingresa los detalles del nuevo gasto aquí.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="description" className="text-sm font-medium">
+              Descripción
+            </label>
+            <Input
+              id="description"
+              type="text"
+              placeholder="Descripción del gasto"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="payment" className="text-sm font-medium">
+              Pago
+            </label>
+            <Input
+              id="payment"
+              type="number"
+              placeholder="Monto del pago"
+              value={payment}
+              onChange={(e) => setPayment(e.target.value)}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="date" className="text-sm font-medium">
+              Fecha
+            </label>
+            <Input
+              id="date"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+          </div>
+          <Button type="submit" className="w-full">
+            Añadir Gasto
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 
