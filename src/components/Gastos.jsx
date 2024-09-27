@@ -42,7 +42,7 @@ const Gastos = ({ onAddGasto }) => {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="px-2 py-1">
           <FaPlus className="mr-1 h-3 w-3" />
-          Añadir Gasto
+          Añada un gasto
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

@@ -60,8 +60,8 @@ export default function Groups() {
     setSelectedGroup(group);
   };
 
-  const handleAddFriendToGroup = (friendId) => {
-    console.log(`Añadir amigo con ID ${friendId} al grupo seleccionado`);
+  const handleAddFriendToGroup = (friendName) => {
+    alert(`${friendName} fue añadido al grupo seleccionado`);
   };
 
   const handleAddGasto = (newGasto) => {
@@ -268,7 +268,7 @@ function FriendsList({ friends, handleAddFriendToGroup }) {
         >
           <span className="text-gray-700">{friend.name}</span>
           <Button
-            onClick={() => handleAddFriendToGroup(friend.id)}
+            onClick={() => handleAddFriendToGroup(friend.name)}
             size="sm"
             variant="outline"
             className="ml-2"
