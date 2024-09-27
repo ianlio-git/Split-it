@@ -132,8 +132,8 @@ function Auth() {
               <div className="mt-6 text-center">
                 <p className="text-blue-200">
                   {isLogin
-                    ? "¿Ya tienes una cuenta?"
-                    : "Todavía no te registraste?"}{" "}
+                    ? "Todavía no te registraste?"
+                    : "¿Ya tienes una cuenta?"}{" "}
                   <span
                     className="text-blue-300 hover:text-blue-100 transition-colors duration-200 cursor-pointer"
                     onClick={() => {
