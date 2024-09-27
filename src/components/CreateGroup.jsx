@@ -1,3 +1,4 @@
+// CreateGroup.js
 import React, { useState } from "react";
 import {
   Dialog,
@@ -11,15 +12,27 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { FaPlus } from "react-icons/fa";
 
-export default function CreateGroup({ className }) {
+export default function CreateGroup({ className, onCreateGroup }) {
+  // Cambiado a onCreateGroup
   const [isOpen, setIsOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupType, setGroupType] = useState("");
 
   const handleSubmit = () => {
-    if (groupName && groupType) {
-      alert(`Grupo "${groupName}" añadido`);
-      setIsOpen(false);
+    if (groupName.trim() && groupType.trim()) {
+      // Validación mejorada
+      const newGroup = {
+        id: Date.now(), // Genera un ID único
+        name: groupName.trim(),
+        description: groupType.trim(),
+        members: [], // Inicialmente vacío
+      };
+      onCreateGroup(newGroup); // Llama a la función del padre para añadir el grupo
+      setGroupName("");
+      setGroupType("");
+      setIsOpen(false); // Cierra el diálogo
+    } else {
+      alert("Por favor, completa todos los campos.");
     }
   };
 

@@ -1,3 +1,4 @@
+// Groups.js
 import React, { useState, useEffect } from "react";
 import {
   FaHome,
@@ -10,7 +11,6 @@ import {
   FaChevronUp,
 } from "react-icons/fa";
 
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,9 +18,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../components/ui/collapsible";
-import CreateGroupDialog from "../components/CreateGroup";
+import CreateGroup from "../components/CreateGroup"; // Asegúrate de importar solo una vez
 import Gastos from "../components/Gastos";
-import CreateGroup from "../components/CreateGroup";
 import ImageViewer from "../components/ImageViewer";
 
 export default function Groups() {
@@ -55,6 +54,12 @@ export default function Groups() {
     fetchGroups();
     fetchFriends();
   }, []);
+
+  // Función para manejar la creación de un nuevo grupo
+  const handleCreateGroup = (newGroup) => {
+    setGroups((prevGroups) => [...prevGroups, newGroup]);
+    console.log("Nuevo grupo añadido:", newGroup); // Para depuración
+  };
 
   const handleSelectGroup = (group) => {
     setSelectedGroup(group);
@@ -118,14 +123,14 @@ export default function Groups() {
 
         {/* Botón Agregar Grupo en Móvil */}
         <div className="md:hidden mb-4">
-          <CreateGroup className="w-full" />
+          <CreateGroup className="w-full" onCreateGroup={handleCreateGroup} />
         </div>
 
         <div className="hidden md:block">
           <div className="bg-gray-50 p-6 rounded-lg">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-800">Mis Grupos</h2>
-              <CreateGroup className="ml-4" />
+              <CreateGroup className="ml-4" onCreateGroup={handleCreateGroup} />
             </div>
             <GroupsList
               groups={groups}
