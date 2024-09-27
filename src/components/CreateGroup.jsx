@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
 import {
   Dialog,
@@ -10,9 +9,9 @@ import {
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { FaPlus } from "react-icons/fa";
 
-// eslint-disable-next-line react/prop-types
-export default function CreateGroup({ onSubmit }) {
+export default function CreateGroup({ onSubmit, className }) {
   const [newGroup, setNewGroup] = useState({
     name: "",
     type: "",
@@ -36,8 +35,13 @@ export default function CreateGroup({ onSubmit }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="mt-6 mx-auto bg-green-700 hover:bg-green-800 block rounded-full">
-          Crear un nuevo grupo
+        <Button
+          size="sm"
+          variant="outline"
+          className={`flex items-center ${className}`}
+        >
+          <FaPlus className="mr-1" />
+          Crear Grupo
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-gray-800 text-white">
@@ -55,10 +59,10 @@ export default function CreateGroup({ onSubmit }) {
               className="bg-gray-700 text-white rounded-full"
             />
           </div>
-        </div>    
+        </div>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="groupType">Tipo de grupo</Label>
+            <Label htmlFor="groupType">Descripción</Label>
             <Input
               id="groupType"
               name="type"
