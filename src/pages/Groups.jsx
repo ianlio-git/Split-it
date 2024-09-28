@@ -148,6 +148,26 @@ export default function Groups() {
     setGastos((prevGastos) => [...prevGastos, gastoWithDivision]);
   };
 
+  const handleDeleteMember = (memberId) => {
+    if (!selectedGroup) return;
+
+    const updatedMembers = selectedGroup.members.filter(
+      (member) => member.id !== memberId
+    );
+
+    const updatedGroup = {
+      ...selectedGroup,
+      members: updatedMembers,
+    };
+
+    setSelectedGroup(updatedGroup);
+    setGroups((prevGroups) =>
+      prevGroups.map((group) =>
+        group.id === selectedGroup.id ? updatedGroup : group
+      )
+    );
+  };
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
@@ -284,24 +304,36 @@ export default function Groups() {
             {selectedGroup.members.map((member) => (
               <li
                 key={member.id}
-                className="flex items-center p-3 bg-gray-50 rounded-lg shadow-sm"
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg shadow-sm"
               >
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="w-10 h-10 rounded-full mr-4"
-                />
-                <div>
-                  <span className="font-bold text-gray-800">{member.name}</span>
-                  <p
-                    className={`${
-                      member.balance < 0 ? "text-red-500" : "text-green-600"
-                    } font-semibold`}
-                  >
-                    {member.balance < 0 ? "Debe" : "Recupera"} ${" "}
-                    {Math.abs(member.balance).toFixed(2)}
-                  </p>
+                <div className="flex items-center">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-10 h-10 rounded-full mr-4"
+                  />
+                  <div>
+                    <span className="font-bold text-gray-800">
+                      {member.name}
+                    </span>
+                    <p
+                      className={`${
+                        member.balance < 0 ? "text-red-500" : "text-green-600"
+                      } font-semibold`}
+                    >
+                      {member.balance < 0 ? "Debe" : "Recupera"} ${" "}
+                      {Math.abs(member.balance).toFixed(2)}
+                    </p>
+                  </div>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDeleteMember(member.id)}
+                  className="text-gray-500 hover:text-red-500"
+                >
+                  <FaTrash />
+                </Button>
               </li>
             ))}
           </ul>
