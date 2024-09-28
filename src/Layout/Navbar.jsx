@@ -45,7 +45,10 @@ function Navbar() {
     return (
       <header className="fixed top-0 left-0 w-full bg-blue-900 text-white shadow-md z-50 h-16 bg-opacity-90 backdrop-blur-md backdrop-filter">
         <nav className="container mx-auto px-6 h-full flex justify-between items-center">
-          <div className="text-2xl md:text-3xl font-bold text-white cursor-pointer">
+          <div
+            onClick={() => navigate("/")}
+            className="text-2xl md:text-3xl font-bold text-white cursor-pointer"
+          >
             Split-it!
           </div>
           <div className="space-x-2 md:space-x-4 flex items-center">
