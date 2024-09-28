@@ -3,19 +3,19 @@
     "id": 1,
     "name": "San Martín",
     "type": "Viaje",
-    "balance": 61760.0,
+    "balance": 0.0,
     "members": [
       {
         "id": 101,
         "name": "Diego",
         "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSocErq1QEBqh8nni6H9Kfxa9teMfXSpg0jzQ&s",
-        "balance": -4520.0
+        "balance": 0.0
       },
       {
         "id": 102,
         "name": "Ian Lio",
         "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSocErq1QEBqh8nni6H9Kfxa9teMfXSpg0jzQ&s",
-        "balance": 4520.0
+        "balance": 0.0
       }
     ]
   },
@@ -37,19 +37,19 @@
     "id": 3,
     "name": "Gastos",
     "type": "Otro",
-    "balance": 121760.0,
+    "balance": 0.0,
     "members": [
       {
         "id": 104,
         "name": "María",
         "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSocErq1QEBqh8nni6H9Kfxa9teMfXSpg0jzQ&s",
-        "balance": 50000.0
+        "balance": 0.0
       },
       {
         "id": 105,
         "name": "José",
         "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSocErq1QEBqh8nni6H9Kfxa9teMfXSpg0jzQ&s",
-        "balance": 71760.0
+        "balance": 0.0
       }
     ]
   }

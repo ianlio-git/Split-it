@@ -1,4 +1,3 @@
-// Groups.js
 import React, { useState, useEffect } from "react";
 import {
   FaHome,
@@ -18,7 +17,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../components/ui/collapsible";
-import CreateGroup from "../components/CreateGroup"; // Asegúrate de importar solo una vez
+import CreateGroup from "../components/CreateGroup";
 import Gastos from "../components/Gastos";
 import ImageViewer from "../components/ImageViewer";
 
@@ -55,10 +54,9 @@ export default function Groups() {
     fetchFriends();
   }, []);
 
-  // Función para manejar la creación de un nuevo grupo
   const handleCreateGroup = (newGroup) => {
     setGroups((prevGroups) => [...prevGroups, newGroup]);
-    console.log("Nuevo grupo añadido:", newGroup); // Para depuración
+    console.log("Nuevo grupo añadido:", newGroup);
   };
 
   const handleSelectGroup = (group) => {
@@ -71,7 +69,6 @@ export default function Groups() {
       return;
     }
 
-    // Verifica si el amigo ya está en el grupo
     const isAlreadyInGroup = selectedGroup.members.some(
       (member) => member.name === friendName
     );
@@ -81,42 +78,69 @@ export default function Groups() {
       return;
     }
 
-    // Crear un nuevo miembro con saldo inicial de 0
     const newMember = {
-      id: Date.now(), // ID único
+      id: Date.now(),
       name: friendName,
       balance: 0,
-      image: "https://via.placeholder.com/40", // Placeholder para imagen, puedes cambiarlo
+      image: "https://via.placeholder.com/40",
     };
 
-    // Actualizar el grupo con el nuevo miembro
     const updatedGroup = {
       ...selectedGroup,
       members: [...selectedGroup.members, newMember],
     };
 
-    // Actualizar los grupos en el estado
     setGroups((prevGroups) =>
       prevGroups.map((group) =>
         group.id === selectedGroup.id ? updatedGroup : group
       )
     );
 
-    // Actualizar el grupo seleccionado
     setSelectedGroup(updatedGroup);
 
     alert(`${friendName} fue añadido al grupo ${selectedGroup.name}`);
   };
 
   const handleAddGasto = (newGasto) => {
-    setGastos((prevGastos) => [...prevGastos, newGasto]);
+    if (!selectedGroup || selectedGroup.members.length === 0) {
+      alert(
+        "Por favor, selecciona un grupo con miembros para añadir un gasto."
+      );
+      return;
+    }
+
+    const totalMembers = selectedGroup.members.length;
+    const expensePerMember = newGasto.payment / totalMembers;
+
+    const updatedMembers = selectedGroup.members.map((member) => ({
+      ...member,
+      balance: member.balance - expensePerMember,
+    }));
+
+    const updatedGroup = {
+      ...selectedGroup,
+      members: updatedMembers,
+    };
+
+    setSelectedGroup(updatedGroup);
+    setGroups((prevGroups) =>
+      prevGroups.map((group) =>
+        group.id === selectedGroup.id ? updatedGroup : group
+      )
+    );
+
+    const gastoWithDivision = {
+      ...newGasto,
+      dividedAmount: expensePerMember,
+      paidBy: selectedGroup.members[0].name, // Assuming the first member paid
+    };
+
+    setGastos((prevGastos) => [...prevGastos, gastoWithDivision]);
   };
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-      {/* Panel Lateral Izquierdo */}
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
-        {/* Collapsible para Grupos en Móvil */}
         <Collapsible
           open={isGroupsOpen}
           onOpenChange={setIsGroupsOpen}
@@ -140,7 +164,6 @@ export default function Groups() {
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Collapsible para Amigos en Móvil */}
         <Collapsible
           open={isFriendsOpen}
           onOpenChange={setIsFriendsOpen}
@@ -163,12 +186,10 @@ export default function Groups() {
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Botón Agregar Grupo en Móvil */}
         <div className="md:hidden mb-4">
           <CreateGroup className="w-full" onCreateGroup={handleCreateGroup} />
         </div>
 
-        {/* Panel Lateral Izquierdo en Pantallas Grandes */}
         <div className="hidden md:block">
           <div className="bg-gray-50 p-6 rounded-lg">
             <div className="flex justify-between items-center mb-6">
@@ -191,7 +212,6 @@ export default function Groups() {
         </div>
       </div>
 
-      {/* Panel Central */}
       <div className="w-full md:w-2/4 p-4 bg-white shadow-md">
         {selectedGroup ? (
           <div>
@@ -222,11 +242,10 @@ export default function Groups() {
                     <p className="text-gray-600">Estado: Pendiente</p>
                     <p className="text-gray-600">Fecha: {gasto.date}</p>
                     <p className="text-gray-600">
-                      Diego pagó: {gasto.payment * (gasto.percentage / 100)}
+                      {gasto.paidBy} pagó: ${gasto.payment}
                     </p>
                     <p className="text-gray-600">
-                      Tú debes:{" "}
-                      {gasto.payment - gasto.payment * (gasto.percentage / 100)}
+                      Monto por persona: ${gasto.dividedAmount.toFixed(2)}
                     </p>
                   </div>
                   <div className="flex justify-center items-center ml-4">
@@ -243,7 +262,6 @@ export default function Groups() {
         )}
       </div>
 
-      {/* Panel Lateral Derecho para Saldos del Grupo */}
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
         <div className="flex items-center mb-4">
           <FaMoneyBillWave className="text-gray-600 mr-2 text-2xl" />
@@ -285,7 +303,6 @@ export default function Groups() {
   );
 }
 
-// Lista de Grupos
 function GroupsList({ groups, selectedGroup, handleSelectGroup }) {
   return (
     <ul className="space-y-3 mb-6">
@@ -310,7 +327,6 @@ function GroupsList({ groups, selectedGroup, handleSelectGroup }) {
   );
 }
 
-// Lista de Amigos
 function FriendsList({ friends, handleAddFriendToGroup }) {
   return (
     <ul className="space-y-2">
