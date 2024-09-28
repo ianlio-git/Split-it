@@ -8,6 +8,7 @@ import {
   FaMoneyBillWave,
   FaChevronDown,
   FaChevronUp,
+  FaTrash,
 } from "react-icons/fa";
 
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,15 @@ export default function Groups() {
 
   const handleSelectGroup = (group) => {
     setSelectedGroup(group);
+  };
+
+  const handleDeleteGroup = (groupId) => {
+    setGroups((prevGroups) =>
+      prevGroups.filter((group) => group.id !== groupId)
+    );
+    if (selectedGroup && selectedGroup.id === groupId) {
+      setSelectedGroup(null);
+    }
   };
 
   const handleAddFriendToGroup = (friendName) => {
@@ -160,6 +170,7 @@ export default function Groups() {
               groups={groups}
               selectedGroup={selectedGroup}
               handleSelectGroup={handleSelectGroup}
+              handleDeleteGroup={handleDeleteGroup}
             />
           </CollapsibleContent>
         </Collapsible>
@@ -200,6 +211,7 @@ export default function Groups() {
               groups={groups}
               selectedGroup={selectedGroup}
               handleSelectGroup={handleSelectGroup}
+              handleDeleteGroup={handleDeleteGroup}
             />
             <h2 className="text-xl font-bold mb-4 mt-6 text-gray-800">
               Mis Amigos
@@ -303,24 +315,44 @@ export default function Groups() {
   );
 }
 
-function GroupsList({ groups, selectedGroup, handleSelectGroup }) {
+function GroupsList({
+  groups,
+  selectedGroup,
+  handleSelectGroup,
+  handleDeleteGroup,
+}) {
   return (
     <ul className="space-y-3 mb-6">
       {groups.map((group) => (
         <li
           key={group.id}
-          onClick={() => handleSelectGroup(group)}
-          className={`cursor-pointer p-3 rounded-lg shadow-sm transition-all flex items-center ${
+          className={`cursor-pointer p-3 rounded-lg shadow-sm transition-all flex items-center justify-between ${
             selectedGroup?.id === group.id
               ? "bg-blue-100 text-blue-800"
               : "bg-white hover:bg-gray-100 text-gray-800"
           }`}
         >
-          <FaUsers className="mr-2" />
-          <span className="font-medium">
-            {group.name.charAt(0).toUpperCase() +
-              group.name.slice(1).toLowerCase()}
-          </span>
+          <div
+            className="flex items-center flex-grow"
+            onClick={() => handleSelectGroup(group)}
+          >
+            <FaUsers className="mr-2" />
+            <span className="font-medium">
+              {group.name.charAt(0).toUpperCase() +
+                group.name.slice(1).toLowerCase()}
+            </span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteGroup(group.id);
+            }}
+            className="text-gray-500 hover:text-red-500"
+          >
+            <FaTrash />
+          </Button>
         </li>
       ))}
     </ul>
