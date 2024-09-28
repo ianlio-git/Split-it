@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { useUser } from "../context/UserContext"; // Importa el contexto
-import { useNavigate } from "react-router-dom"; // Importa useNavigate
+import { useUser } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const InputField = ({
   id,
@@ -14,22 +14,24 @@ const InputField = ({
   onChange,
   placeholder,
 }) => (
-  <div className="mt-4">
-    <Label htmlFor={id}>{label}</Label>
+  <div className="mt-6">
+    <Label htmlFor={id} className="text-lg font-medium">
+      {label}
+    </Label>
     <Input
       id={id}
       name={name}
       type={type}
-      value={value} // Mantener el valor actualizado
+      value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className="bg-gray-700 text-white p-2 rounded-full"
+      className="p-3 rounded-lg border border-gray-300 w-full"
     />
   </div>
 );
 
 export default function Profile() {
-  const { user, setUser, logout } = useUser(); // Asegúrate de obtener setUser
+  const { user, setUser, logout } = useUser();
   const [formData, setFormData] = useState({
     name: "",
     lastname: "",
@@ -39,9 +41,8 @@ export default function Profile() {
     newPassword: "",
   });
 
-  const [currentUserData, setCurrentUserData] = useState(null); // Para almacenar los datos actuales del usuario
-
-  const navigate = useNavigate(); // Inicializa el hook de navegación
+  const [currentUserData, setCurrentUserData] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -50,13 +51,12 @@ export default function Profile() {
         const data = await response.json();
         if (data.users.length > 0) {
           const userData = data.users[0];
-          setCurrentUserData(userData); // Almacena los datos actuales del usuario
-          // También actualizar el estado del formulario con los datos actuales
+          setCurrentUserData(userData);
           setFormData({
-            name: "",
-            lastname: "",
-            email: "",
-            avatar: "",
+            name: userData.name,
+            lastname: userData.lastname,
+            email: userData.email,
+            avatar: userData.avatar,
             currentPassword: "",
             newPassword: "",
           });
@@ -75,50 +75,28 @@ export default function Profile() {
   };
 
   const handleSaveClick = () => {
-    // Preparamos el objeto de datos a actualizar
-    const updatedUser = { ...currentUserData }; // Comenzamos con los datos actuales
-    let changes = []; // Array para almacenar los cambios realizados
+    const updatedUser = { ...currentUserData };
+    let changes = [];
 
-    // Solo se pide la contraseña si se intenta cambiar el email o la contraseña
     if (formData.email || formData.newPassword) {
       if (formData.currentPassword !== "1234") {
-        alert(
-          "La contraseña actual es incorrecta. No se pueden realizar cambios en el correo electrónico o la contraseña."
-        );
-        return; // Salir del método si la contraseña no es correcta
+        alert("La contraseña actual es incorrecta.");
+        return;
       }
     }
 
-    // Actualizamos solo si los campos del formulario tienen datos
-    if (formData.name) {
-      updatedUser.name = formData.name;
-      changes.push(`Nombre: ${formData.name}`);
-    }
-    if (formData.lastname) {
-      updatedUser.lastname = formData.lastname;
-      changes.push(`Apellido: ${formData.lastname}`);
-    }
-    if (formData.email) {
-      updatedUser.email = formData.email;
-      changes.push(`Correo Electrónico: ${formData.email}`);
-    }
-    if (formData.avatar) {
-      updatedUser.avatar = formData.avatar;
-      changes.push(`Foto de perfil: ${formData.avatar}`);
-    }
-    if (formData.newPassword) {
-      updatedUser.password = formData.newPassword; // Asegúrate de manejar la contraseña nueva adecuadamente
-      changes.push(`Nueva Contraseña establecida`); // Mensaje genérico
-    }
+    Object.keys(formData).forEach((key) => {
+      if (formData[key]) {
+        updatedUser[key] = formData[key];
+        changes.push(
+          `${key.charAt(0).toUpperCase() + key.slice(1)}: ${formData[key]}`
+        );
+      }
+    });
 
-    // Si se realizaron cambios, actualizamos el usuario en el contexto
     if (changes.length > 0) {
-      alert(
-        `Datos guardados! Se han realizado los siguientes cambios: ${changes.join(
-          ", "
-        )}`
-      );
-      setUser(updatedUser); // Actualiza el usuario en el contexto
+      alert(`Datos guardados! Cambios: ${changes.join(", ")}`);
+      setUser(updatedUser);
     } else {
       alert("No se realizaron cambios.");
     }
@@ -126,109 +104,111 @@ export default function Profile() {
 
   const handleDeleteAccount = () => {
     if (formData.currentPassword === "") {
-      alert("Por favor, introduzca la contraseña actual.");
+      alert("Introduzca la contraseña actual.");
       return;
     }
 
     if (formData.currentPassword !== "1234") {
-      alert("La contraseña actual es incorrecta.");
+      alert("Contraseña actual incorrecta.");
       return;
     }
 
-    console.log("Cuenta eliminada:", currentUserData);
-    setUser(null); // Limpia el usuario
-    logout(); // Llama a la función logout
-    navigate("/"); // Redirige a la landing page
+    setUser(null);
+    logout();
+    navigate("/");
   };
 
   if (!currentUserData) {
-    return <div>Cargando datos del usuario...</div>; // Mostrar un mensaje de carga
+    return <div>Cargando datos del usuario...</div>;
   }
 
   return (
-    <div className="p-6 min-h-screen text-white bg-gradient-to-b from-blue-50 to-white">
-      <div className="max-w-xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
-        <div className="flex items-center space-x-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white text-black p-6">
+      <h1 className="text-3xl font-bold mb-8">Perfil</h1>
+      <div className="w-full max-w-3xl p-8 bg-gray-200 rounded-lg shadow-md mb-6">
+        <div className="flex items-center mb-4">
           <img
-            src={currentUserData.avatar} // Mostrar el avatar actual
+            src={currentUserData.avatar}
             alt="Avatar"
-            className="w-24 h-24 rounded-full object-cover"
+            className="w-24 h-24 rounded-full border-2 border-gray-300 object-cover"
           />
-          <div>
+          <div className="ml-6">
             <h1 className="text-2xl font-bold">
-              {currentUserData.name} {currentUserData.lastname}{" "}
-              {/* Mostrar nombre y apellido actuales */}
+              {currentUserData.name} {currentUserData.lastname}
             </h1>
-            <p className="text-gray-400">{currentUserData.email}</p>
+            <p className="text-gray-700">{currentUserData.email}</p>
+            <p className="text-gray-600">{currentUserData.phone}</p>
+            <p className="text-gray-600">{currentUserData.address}</p>
           </div>
         </div>
+      </div>
+      <div className="w-full max-w-3xl p-8 bg-gray-100 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4">Detalles del Perfil</h2>
+        <InputField
+          id="avatar"
+          label="Foto de perfil"
+          name="avatar"
+          type="text"
+          value={formData.avatar}
+          onChange={handleInputChange}
+          placeholder="Ingrese la URL de su foto de perfil"
+        />
+        <InputField
+          id="name"
+          label="Nombre"
+          name="name"
+          type="text"
+          value={formData.name}
+          onChange={handleInputChange}
+          placeholder="Ingrese su nombre"
+        />
+        <InputField
+          id="lastname"
+          label="Apellido"
+          name="lastname"
+          type="text"
+          value={formData.lastname}
+          onChange={handleInputChange}
+          placeholder="Ingrese su apellido"
+        />
+        <InputField
+          id="email"
+          label="Correo Electrónico"
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          placeholder="Ingrese su correo electrónico"
+        />
+        <InputField
+          id="currentPassword"
+          label="Contraseña actual"
+          name="currentPassword"
+          type="password"
+          value={formData.currentPassword}
+          onChange={handleInputChange}
+          placeholder="Ingrese su contraseña actual"
+        />
+        <InputField
+          id="newPassword"
+          label="Nueva Contraseña"
+          name="newPassword"
+          type="password"
+          value={formData.newPassword}
+          onChange={handleInputChange}
+          placeholder="Ingrese su nueva contraseña"
+        />
 
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold">Detalles del Perfil</h2>
-          <InputField
-            id="avatar"
-            label="Foto de perfil"
-            name="avatar"
-            type="text"
-            value={formData.avatar} // Mantener el campo vacío
-            onChange={handleInputChange}
-            placeholder="Ingrese la URL de su foto de perfil"
-          />
-          <InputField
-            id="name"
-            label="Nombre"
-            name="name"
-            type="text"
-            value={formData.name} // Mantener el campo vacío
-            onChange={handleInputChange}
-            placeholder="Ingrese su nombre"
-          />
-          <InputField
-            id="lastname"
-            label="Apellido"
-            name="lastname"
-            type="text"
-            value={formData.lastname} // Mantener el campo vacío
-            onChange={handleInputChange}
-            placeholder="Ingrese su apellido"
-          />
-          <InputField
-            id="email"
-            label="Correo Electrónico"
-            name="email"
-            type="email"
-            value={formData.email} // Mantener el campo vacío
-            onChange={handleInputChange}
-            placeholder="Ingrese su correo electrónico"
-          />
-          <InputField
-            id="currentPassword"
-            label="Contraseña actual"
-            name="currentPassword"
-            type="password"
-            value={formData.currentPassword} // Mantener el campo vacío
-            onChange={handleInputChange}
-            placeholder="Ingrese su contraseña actual"
-          />
-          <InputField
-            id="newPassword"
-            label="Nueva Contraseña"
-            name="newPassword"
-            type="password"
-            value={formData.newPassword} // Mantener el campo vacío
-            onChange={handleInputChange}
-            placeholder="Ingrese su nueva contraseña"
-          />
-
+        <div className="mt-6 flex flex-col space-y-4">
           <Button
             onClick={handleSaveClick}
-            className="mt-4 bg-green-700 hover:bg-green-800 rounded-full"
+            className="bg-gray-600 hover:bg-gray-800 text-lg font-medium rounded-md text-white px-4 py-2" // Ajuste de tamaño
           >
             Guardar
           </Button>
           <Button
             onClick={handleDeleteAccount}
-            className="mt-4 bg-red-700 hover:bg-red-800 rounded-full"
+            className="bg-red-600 hover:bg-red-700 text-lg font-medium rounded-md text-white px-4 py-2" // Ajuste de tamaño
           >
             Eliminar Cuenta
           </Button>
