@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import {
@@ -12,41 +11,42 @@ import {
 import InputField from "../components/InputField";
 
 function Auth() {
-  const [isLogin, setIsLogin] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [forgotPasswordDialogOpen, setForgotPasswordDialogOpen] =
+    useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState("");
-  const [users, setUsers] = useState([]);
-  const { login } = useUser();
-  const [dialogOpen, setDialogOpen] = useState(false); // Controlar la apertura del diálogo
-  const [forgotPasswordDialogOpen, setForgotPasswordDialogOpen] =
-    useState(false); // Nuevo estado para el diálogo de recuperación
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/users.json");
-        const data = await response.json();
-        setUsers(data.users);
-      } catch (error) {
-        console.error("Error al cargar el archivo JSON:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const user = users.find(
-      (user) => user.email === email && user.password === password
-    );
+    try {
+      const response = await fetch("http://localhost:4000/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (user) {
-      login({ name: user.name });
-    } else {
-      setError("El correo electrónico o la contraseña son incorrectos.");
+      if (!response.ok) {
+        // If the response is not successful, throw an error
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al iniciar sesión");
+      }
+
+      const data = await response.json();
+      console.log("Login successful:", data);
+
+      localStorage.setItem("token", data.token);
+      setDialogOpen(false);
+      setIsLogin(true);
+      // Handle successful login (e.g., save token, redirect, etc.)
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      setError(error.message || "Error al iniciar sesión");
     }
   };
 
@@ -58,8 +58,7 @@ function Auth() {
   const handleForgotPassword = (e) => {
     e.preventDefault();
     console.log("Recuperar contraseña para el email:", email);
-    // Aquí podrías añadir la lógica para enviar un email de recuperación
-    setForgotPasswordDialogOpen(false); // Cierra el diálogo después de enviar
+    setForgotPasswordDialogOpen(false);
   };
 
   return (
@@ -67,19 +66,13 @@ function Auth() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger
           className="text-white hover:text-blue-200 transition-all duration-300 transform hover:scale-105 text-sm md:text-lg"
-          onClick={() => {
-            setIsLogin(true);
-            setDialogOpen(true);
-          }}
+          onClick={() => setDialogOpen(true)}
         >
           Iniciar Sesión
         </DialogTrigger>
         <DialogTrigger
           className="text-white hover:text-blue-200 transition-all duration-300 transform hover:scale-105 text-sm md:text-lg"
-          onClick={() => {
-            setIsLogin(false);
-            setDialogOpen(true);
-          }}
+          onClick={() => setDialogOpen(true)}
         >
           Registrate
         </DialogTrigger>
@@ -127,6 +120,7 @@ function Auth() {
                   className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   {isLogin ? "Iniciar Sesión" : "Registrarse"}
+                  {/* este es el boton */}
                 </button>
               </form>
               <div className="mt-6 text-center">
@@ -136,9 +130,7 @@ function Auth() {
                     : "¿Ya tienes una cuenta?"}{" "}
                   <span
                     className="text-blue-300 hover:text-blue-100 transition-colors duration-200 cursor-pointer"
-                    onClick={() => {
-                      setIsLogin(!isLogin);
-                    }} // Cambia entre login y registro
+                    onClick={() => setIsLogin(!isLogin)}
                   >
                     {isLogin ? "Registrate" : "Iniciar Sesión"}
                   </span>
@@ -157,7 +149,6 @@ function Auth() {
         </DialogContent>
       </Dialog>
 
-      {/* Diálogo para recuperar contraseña */}
       <Dialog
         open={forgotPasswordDialogOpen}
         onOpenChange={setForgotPasswordDialogOpen}
