@@ -39,10 +39,11 @@ function Auth() {
 
       const data = await response.json();
       console.log("Login successful:", data);
-
       localStorage.setItem("token", data.token);
-      setDialogOpen(false);
+      console.log({ token: data.token });
       setIsLogin(true);
+      setDialogOpen(false);
+      window.location.reload();
       // Handle successful login (e.g., save token, redirect, etc.)
     } catch (error) {
       console.error("Error al iniciar sesión:", error);

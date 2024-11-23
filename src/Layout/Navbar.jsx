@@ -9,7 +9,7 @@ import { LogOutIcon } from "lucide-react";
 import Profile from "../pages/Profile";
 
 function Navbar() {
-  const { user, logout } = useUser();
+  const { user, setUser, logout } = useUser();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -20,12 +20,22 @@ function Navbar() {
 
   useEffect(() => {
     const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
       try {
-        const response = await fetch("/users.json"); // Asegúrate de que la ruta es correcta
+        const response = await fetch(
+          "http://localhost:4000/api/users/profile",
+          {
+            headers: {
+              "x-auth-token": localStorage.getItem("token"),
+            },
+          }
+        );
         const data = await response.json();
-        if (data.users.length > 0) {
-          const userData = data.users[0];
-          setAvatar(userData.avatar);
+        if (data) {
+          setAvatar(data.photo);
+          setUser({ name: data.name, email: data.email }); // Actualiza el estado del usuario en el contexto
         }
       } catch (error) {
         console.error("Error al cargar los datos del usuario:", error);
@@ -33,7 +43,7 @@ function Navbar() {
     };
 
     fetchUserData();
-  }, []);
+  }, [setUser]);
 
   const isLanding =
     location.pathname === "/" ||
