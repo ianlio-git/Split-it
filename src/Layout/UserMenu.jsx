@@ -36,20 +36,40 @@ export default function UserMenu() {
 
   useEffect(() => {
     const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No hay token en el localStorage.");
+        return;
+      }
+
       try {
-        const response = await fetch("/users.json");
-        const data = await response.json();
-        if (data.users.length > 0) {
-          const userData = data.users[0];
+        const response = await fetch(
+          "http://localhost:4000/api/users/profile",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-auth-token": token, // Agregar token para autenticación
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
           setFormData({
-            name: userData.name,
-            email: userData.email,
-            password: "",
-            avatar: userData.avatar,
+            name: data.name,
+            email: data.email,
+            password: "", // No necesitamos cargar la contraseña
+            avatar: data.photo || "/placeholder.svg?height=96&width=96", // Usar foto del backend
           });
+        } else {
+          console.error(
+            "Error al cargar los datos del usuario:",
+            response.statusText
+          );
         }
       } catch (error) {
-        console.error("Error al cargar los datos del usuario:", error);
+        console.error("Error al conectar con el backend:", error);
       }
     };
 
@@ -98,7 +118,7 @@ export default function UserMenu() {
         <SheetHeader className="text-center">
           <Avatar className="w-24 h-24 rounded-full">
             <AvatarImage
-              src={formData.avatar || "/placeholder.svg?height=96&width=96"}
+              src={formData.avatar}
               alt={formData.name}
               className="w-full h-full object-cover rounded-full"
             />
