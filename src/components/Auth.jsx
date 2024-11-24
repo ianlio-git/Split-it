@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useUser } from "../context/UserContext";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Dialog,
@@ -17,6 +16,7 @@ function Auth() {
     useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
   const [name, setName] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState("");
@@ -34,7 +34,6 @@ function Auth() {
       });
 
       if (!response.ok) {
-        // If the response is not successful, throw an error
         const errorData = await response.json();
         throw new Error(errorData.message || "Error al iniciar sesión");
       }
@@ -42,11 +41,9 @@ function Auth() {
       const data = await response.json();
       console.log("Login successful:", data);
       localStorage.setItem("token", data.token);
-      console.log({ token: data.token });
       setIsLogin(true);
       setDialogOpen(false);
-      navigate("/groups"); // Corrected the function call
-      // Handle successful login (e.g., save token, redirect, etc.)
+      navigate("/groups");
       window.location.reload();
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
@@ -54,9 +51,28 @@ function Auth() {
     }
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    console.log("Registrando usuario:", { name, email, password });
+    try {
+      const response = await fetch("http://localhost:4000/api/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password, password2 }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      const data = await response.json();
+      setDialogOpen(false);
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+    }
   };
 
   const handleForgotPassword = (e) => {
@@ -70,13 +86,19 @@ function Auth() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger
           className="text-white hover:text-blue-200 transition-all duration-300 transform hover:scale-105 text-sm md:text-lg"
-          onClick={() => setDialogOpen(true)}
+          onClick={() => {
+            setIsLogin(true);
+            setDialogOpen(true);
+          }}
         >
           Iniciar Sesión
         </DialogTrigger>
         <DialogTrigger
           className="text-white hover:text-blue-200 transition-all duration-300 transform hover:scale-105 text-sm md:text-lg"
-          onClick={() => setDialogOpen(true)}
+          onClick={() => {
+            setIsLogin(false);
+            setDialogOpen(true);
+          }}
         >
           Registrate
         </DialogTrigger>
@@ -113,6 +135,8 @@ function Auth() {
                 {!isLogin && (
                   <InputField
                     type="password"
+                    value={password2}
+                    onChange={(e) => setPassword2(e.target.value)}
                     placeholder="Confirmar contraseña"
                   />
                 )}
@@ -124,7 +148,6 @@ function Auth() {
                   className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   {isLogin ? "Iniciar Sesión" : "Registrarse"}
-                  {/* este es el boton */}
                 </button>
               </form>
               <div className="mt-6 text-center">

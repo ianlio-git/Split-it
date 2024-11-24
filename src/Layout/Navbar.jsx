@@ -6,7 +6,6 @@ import Auth from "../components/Auth";
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOutIcon } from "lucide-react";
-import Profile from "../pages/Profile";
 
 function Navbar() {
   const { user, setUser, logout } = useUser();
@@ -83,10 +82,12 @@ function Navbar() {
                     />
                     <AvatarFallback>
                       {user.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase()}
+                        ? user.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()
+                        : ""}
                     </AvatarFallback>
                   </Avatar>
                   <span
