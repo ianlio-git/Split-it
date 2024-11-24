@@ -36,7 +36,7 @@ export default function Profile() {
     name: "",
     lastname: "",
     email: "",
-    avatar: "",
+    photo: "",
     currentPassword: "",
     newPassword: "",
   });
@@ -46,23 +46,40 @@ export default function Profile() {
 
   useEffect(() => {
     const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No hay token en el localStorage.");
+        return;
+      }
+
       try {
-        const response = await fetch("/users.json");
-        const data = await response.json();
-        if (data.users.length > 0) {
-          const userData = data.users[0];
-          setCurrentUserData(userData);
+        const response = await fetch(
+          "http://localhost:4000/api/users/profile",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-auth-token": token,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentUserData(data);
           setFormData({
-            name: userData.name,
-            lastname: userData.lastname,
-            email: userData.email,
-            avatar: userData.avatar,
+            name: data.name,
+            lastname: data.lastname,
+            email: data.email,
+            photo: data.photo, // Use 'photo' instead of 'avatar'
             currentPassword: "",
             newPassword: "",
           });
+        } else {
+          console.error("Error al obtener los datos:", response.statusText);
         }
       } catch (error) {
-        console.error("Error al cargar los datos del usuario:", error);
+        console.error("Error al conectar con el backend:", error);
       }
     };
 
@@ -74,48 +91,87 @@ export default function Profile() {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSaveClick = () => {
-    const updatedUser = { ...currentUserData };
-    let changes = [];
-
-    if (formData.email || formData.newPassword) {
-      if (formData.currentPassword !== "1234") {
-        alert("La contraseña actual es incorrecta.");
-        return;
-      }
+  const handleSaveClick = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("No se encontró un token válido.");
+      return;
     }
 
-    Object.keys(formData).forEach((key) => {
-      if (formData[key]) {
-        updatedUser[key] = formData[key];
-        changes.push(
-          `${key.charAt(0).toUpperCase() + key.slice(1)}: ${formData[key]}`
-        );
-      }
-    });
+    try {
+      const body = {
+        name: formData.name,
+        lastname: formData.lastname,
+        email: formData.email,
+        password: formData.newPassword || undefined, // Solo enviar si hay una nueva contraseña
+        photo: formData.photo, // Use 'photo' instead of 'avatar'
+      };
 
-    if (changes.length > 0) {
-      alert(`Datos guardados! Cambios: ${changes.join(", ")}`);
-      setUser(updatedUser);
-    } else {
-      alert("No se realizaron cambios.");
+      const response = await fetch("http://localhost:4000/api/users/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token": token,
+        },
+        body: JSON.stringify(body),
+      });
+
+      console.log("Enviando datos al backend:", body);
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setUser(updatedUser);
+        alert("Datos guardados exitosamente.");
+        if (formData.newPassword) {
+          localStorage.removeItem("token");
+          navigate("/Main");
+          window.location.reload();
+        } else {
+          window.location.reload();
+        }
+      } else {
+        const errorData = await response.json();
+        alert(`Error al guardar datos: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error("Error al guardar los datos:", error);
+      alert("Ocurrió un error inesperado.");
     }
   };
 
-  const handleDeleteAccount = () => {
-    if (formData.currentPassword === "") {
+  const handleDeleteAccount = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("No se encontró un token válido.");
+      return;
+    }
+
+    if (!formData.currentPassword) {
       alert("Introduzca la contraseña actual.");
       return;
     }
 
-    if (formData.currentPassword !== "1234") {
-      alert("Contraseña actual incorrecta.");
-      return;
-    }
+    try {
+      const response = await fetch("http://localhost:4000/api/users/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token": token,
+        },
+        body: JSON.stringify({ password: formData.currentPassword }),
+      });
 
-    setUser(null);
-    logout();
-    navigate("/");
+      if (response.ok) {
+        setUser(null);
+        logout();
+        navigate("/");
+      } else {
+        const errorData = await response.json();
+        alert(`Error al eliminar la cuenta: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error("Error al eliminar la cuenta:", error);
+      alert("Ocurrió un error inesperado.");
+    }
   };
 
   if (!currentUserData) {
@@ -128,7 +184,7 @@ export default function Profile() {
       <div className="w-full max-w-3xl p-8 bg-gray-200 rounded-lg shadow-md mb-6">
         <div className="flex items-center mb-4">
           <img
-            src={currentUserData.avatar}
+            src={currentUserData.photo} // Use 'photo' instead of 'avatar'
             alt="Avatar"
             className="w-24 h-24 rounded-full border-2 border-gray-300 object-cover"
           />
@@ -145,11 +201,11 @@ export default function Profile() {
       <div className="w-full max-w-3xl p-8 bg-gray-100 rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4">Detalles del Perfil</h2>
         <InputField
-          id="avatar"
+          id="photo"
           label="Foto de perfil"
-          name="avatar"
+          name="photo"
           type="text"
-          value={formData.avatar}
+          value={formData.photo}
           onChange={handleInputChange}
           placeholder="Ingrese la URL de su foto de perfil"
         />
@@ -202,13 +258,13 @@ export default function Profile() {
         <div className="mt-6 flex flex-col space-y-4">
           <Button
             onClick={handleSaveClick}
-            className="bg-gray-600 hover:bg-gray-800 text-lg font-medium rounded-md text-white px-4 py-2" // Ajuste de tamaño
+            className="bg-gray-600 hover:bg-gray-800 text-lg font-medium rounded-md text-white px-4 py-2"
           >
             Guardar
           </Button>
           <Button
             onClick={handleDeleteAccount}
-            className="bg-red-600 hover:bg-red-700 text-lg font-medium rounded-md text-white px-4 py-2" // Ajuste de tamaño
+            className="bg-red-600 hover:bg-red-700 text-lg font-medium rounded-md text-white px-4 py-2"
           >
             Eliminar Cuenta
           </Button>

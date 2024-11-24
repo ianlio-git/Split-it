@@ -10,6 +10,7 @@ import Friends from "./pages/Friends";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Navbar from "./Layout/Navbar";
+import PasswordRecovery from "./pages/PasswordRecovery";
 import ProtectedRoute from "./context/ProtectedRoute"; // Importa el componente
 
 import "./index.css";
@@ -41,6 +42,7 @@ const App = () => {
             {/* Corregido: Asignar rutas únicas a Privacy y Terms */}
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/recovery" element={<PasswordRecovery />} />
           </Routes>
         </main>
       </div>
