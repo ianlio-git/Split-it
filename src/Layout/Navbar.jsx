@@ -28,10 +28,13 @@ function Navbar() {
           "http://localhost:4000/api/users/profile",
           {
             headers: {
-              "x-auth-token": localStorage.getItem("token"),
+              "x-auth-token": token,
             },
           }
         );
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
         const data = await response.json();
         if (data) {
           setAvatar(data.photo);
@@ -39,11 +42,18 @@ function Navbar() {
         }
       } catch (error) {
         console.error("Error al cargar los datos del usuario:", error);
+        setUser(null); // Limpiar el estado del usuario en caso de error
       }
     };
 
     fetchUserData();
   }, [setUser]);
+
+  const handleLogout = () => {
+    logout();
+    localStorage.removeItem("token"); // Eliminar el token del almacenamiento local
+    navigate("/"); // Redirigir a la página de inicio
+  };
 
   const isLanding =
     location.pathname === "/" ||
@@ -90,7 +100,7 @@ function Navbar() {
 
                 <Button
                   variant="destructive"
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-2 rounded-full shadow-lg transition-transform duration-300 transform hover:scale-105 text-sm md:text-l"
                 >
                   <LogOutIcon className="w-5 h-5" />
