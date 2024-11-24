@@ -1,9 +1,0 @@
-[
-  {
-    "id": 1,
-    "description": "Pago de la cena",
-    "payment": "3000",
-    "state": "Pago",
-    "date": "25/06/2024"
-  }
-]
