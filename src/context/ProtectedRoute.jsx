@@ -1,10 +1,16 @@
+import React from "react";
 import { Navigate } from "react-router-dom";
-import { useUser } from "./UserContext"; // Ajusta la ruta según tu estructura
 
 const ProtectedRoute = ({ element }) => {
-  const { user } = useUser(); // Obtiene el contexto de usuario
+  const token = localStorage.getItem("token");
 
-  return user ? element : <Navigate to="/" />;
+  if (!token) {
+    // Si no hay token, redirige a la página de inicio de sesión
+    return <Navigate to="/" replace />;
+  }
+
+  // Si hay token, renderiza el componente solicitado
+  return element;
 };
 
 export default ProtectedRoute;

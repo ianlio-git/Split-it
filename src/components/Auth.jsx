@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +20,7 @@ function Auth() {
   const [name, setName] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -43,8 +45,9 @@ function Auth() {
       console.log({ token: data.token });
       setIsLogin(true);
       setDialogOpen(false);
-      window.location.reload();
+      navigate("/groups"); // Corrected the function call
       // Handle successful login (e.g., save token, redirect, etc.)
+      window.location.reload();
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       setError(error.message || "Error al iniciar sesión");
