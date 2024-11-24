@@ -70,11 +70,6 @@ function Landing() {
             <p className="text-xl text-gray-600 mb-3">
               ¡Inicia sesión para comenzar!
             </p>
-            <p className="text-sm text-gray-600 mb-3">
-              Usuario de prueba: <strong>prueba@gmail.com</strong>
-              <br />
-              Contraseña: <strong>1234</strong>
-            </p>
           </div>
         )}
 
