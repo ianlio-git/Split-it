@@ -22,6 +22,13 @@ function Auth() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const resetInputs = () => {
+    setEmail("");
+    setPassword("");
+    setPassword2("");
+    setName("");
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -62,12 +69,12 @@ function Auth() {
         body: JSON.stringify({ name, email, password, password2 }),
       });
 
+      const result = await response.json();
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
+        throw new Error(result.message);
       }
-
-      const data = await response.json();
+      resetInputs();
+      alert("Usuario registrado correctamente, ¡Bienvenido a Split-it!");
       setDialogOpen(false);
     } catch (error) {
       console.error(error);
