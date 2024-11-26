@@ -24,12 +24,52 @@ export default function InviteFriend({ onInvite }) {
     setNewFriend((prevFriend) => ({ ...prevFriend, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    if (newFriend.name && newFriend.email) {
-      const friendWithState = { ...newFriend, state: "Pending" }; // Asegurar el estado "Pending"
-      onInvite(friendWithState); // Pasar el nuevo amigo con el estado
-      setNewFriend({ name: "", email: "" }); // Limpiar el formulario
-      setIsOpen(false); // Cerrar el diálogo
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.error("No hay token en el localStorage.");
+      alert("No estás autenticado. Por favor, inicia sesión.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:4000/api/users/add-friend", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token": token,
+        },
+        body: JSON.stringify({ email: newFriend.email, name: newFriend.name }), // Envía el nombre y el email
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al enviar la invitación.");
+      }
+
+      const data = await response.json();
+
+      // Notifica al componente padre sobre el nuevo amigo
+      if (onInvite) {
+        onInvite({
+          _id: data.friend._id,
+          name: data.friend.name,
+          email: data.friend.email,
+          state: "Pending", // Estado inicial
+        });
+      }
+
+      // Muestra notificación y cierra el modal
+      alert(`Invitación enviada correctamente a ${newFriend.name}.`);
+      setIsOpen(false);
+
+      // Limpia el formulario
+      setNewFriend({ name: "", email: "" });
+    } catch (error) {
+      console.error("Error al enviar la invitación:", error);
+      alert(error.message);
     }
   };
 
@@ -49,7 +89,7 @@ export default function InviteFriend({ onInvite }) {
             Invitar a un amigo
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="friendName" className="text-sm font-medium">
               ¿Cómo se llama tu amigo?
@@ -78,14 +118,13 @@ export default function InviteFriend({ onInvite }) {
               required
             />
           </div>
-        </div>
-
-        <Button
-          onClick={handleSubmit}
-          className="mt-4 bg-black text-white w-full py-2 rounded-lg"
-        >
-          Añadir amigo
-        </Button>
+          <Button
+            type="submit"
+            className="mt-4 bg-black text-white w-full py-2 rounded-lg"
+          >
+            Añadir amigo
+          </Button>
+        </form>
       </DialogContent>
     </Dialog>
   );

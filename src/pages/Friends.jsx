@@ -5,25 +5,53 @@ import InviteFriend from "../components/InviteFriend";
 export default function Friends() {
   const [friends, setFriends] = useState([]);
 
+  // Función para obtener amigos desde el backend
   useEffect(() => {
     const fetchFriends = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No hay token en el localStorage.");
+        return;
+      }
+
       try {
-        const response = await fetch("/friends.json");
-        const data = await response.json();
-        setFriends(data);
+        const response = await fetch("http://localhost:4000/api/users/friends", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.friends && Array.isArray(data.friends)) {
+            setFriends(data.friends); // Si el backend envía un array de amigos
+          } else if (data.friend) {
+            setFriends([data.friend]); // Si el backend envía un solo amigo
+          } else {
+            console.warn("El formato de la respuesta no es válido.");
+          }
+        } else {
+          console.error("Error al obtener los datos:", response.statusText);
+        }
       } catch (error) {
-        console.error("Error al cargar los amigos:", error);
+        console.error("Error al conectar con el backend:", error);
       }
     };
 
     fetchFriends();
   }, []);
 
+  // Maneja la invitación de un nuevo amigo y actualiza la lista
   const handleInvite = (newFriend) => {
-    setFriends([...friends, { ...newFriend, id: Date.now() }]);
+    setFriends((prevFriends) => [...prevFriends, { ...newFriend }]);
   };
 
+  // Renderiza el estado del amigo
   const renderFriendState = (state) => {
+    <span>Accepted</span>
+    state = "Accepted"
     if (state === "Pending") {
       return (
         <span className="text-yellow-500 flex items-center justify-end">
@@ -39,7 +67,7 @@ export default function Friends() {
         </span>
       );
     } else {
-      return <span className="text-gray-400">{state}</span>;
+      return <span className="text-gray-400">{state || "Unknown"}</span>;
     }
   };
 
@@ -54,12 +82,12 @@ export default function Friends() {
           {friends.length > 0 ? (
             friends.map((friend) => (
               <div
-                key={friend.id}
+                key={friend._id} // Asegúrate de usar `_id` como clave única
                 className="bg-white rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center space-x-4"
               >
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-xl font-bold text-white">
-                    {friend.name[0]}
+                    {friend.name[0]?.toUpperCase() || "?"}
                   </span>
                 </div>
                 <div className="flex-grow">
@@ -78,6 +106,7 @@ export default function Friends() {
           )}
         </div>
 
+        {/* Componente para invitar amigos */}
         <InviteFriend onInvite={handleInvite} />
       </div>
     </div>
