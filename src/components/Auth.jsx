@@ -60,13 +60,16 @@ function Auth() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    if(password !== password2) 
+      {setError("Las contraseñas no coinciden")}
+    const fullName = name;
     try {
       const response = await fetch("http://localhost:4000/api/users/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password, password2 }),
+        body: JSON.stringify({ fullName, email, password}),
       });
 
       const result = await response.json();
@@ -82,10 +85,30 @@ function Auth() {
     }
   };
 
-  const handleForgotPassword = (e) => {
+  const handleForgotPassword = async (e) => {
     e.preventDefault();
-    console.log("Recuperar contraseña para el email:", email);
-    setForgotPasswordDialogOpen(false);
+    try {
+      const response = await fetch("http://localhost:4000/api/users/reset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email}),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message);
+      }
+      resetInputs();
+      setForgotPasswordDialogOpen(false);
+      setDialogOpen(false);
+      alert("Si el correo electrónico es válido, se enviará un enlace para restablecer la contraseña.");
+      
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+    }
   };
 
   return (

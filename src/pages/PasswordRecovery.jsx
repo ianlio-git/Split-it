@@ -58,16 +58,26 @@ export default function PasswordRecovery() {
     setIsLoading(true);
 
     try {
-      const token = "token"; // Reemplaza con el token que tengas almacenado (e.g., desde el contexto o localStorage).
+      // Obtén el token directamente de la URL sin procesarlo manualmente
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+      console.log(token);
+      console.log(newPassword);
+      if (!token) {
+        throw new Error("Token no encontrado en la URL.");
+      }
 
-      const response = await fetch("http://localhost:4000/api/users/update", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-auth-token": token,
-        },
-        body: JSON.stringify({ password: newPassword }),
-      });
+      const response = await fetch(
+        "http://localhost:4000/api/users/change-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token,
+          },
+          body: JSON.stringify({ newPassword }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Error al actualizar la contraseña.");
@@ -75,7 +85,7 @@ export default function PasswordRecovery() {
 
       const data = await response.json();
       alert("¡Contraseña actualizada con éxito!");
-      navigate("/login");
+      navigate("/Main");
     } catch (error) {
       console.error("Error en la actualización:", error);
       alert("Hubo un problema al actualizar la contraseña.");
