@@ -24,9 +24,10 @@ export default function Groups() {
   const [groups, setGroups] = useState([]);
   const [friends, setFriends] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [gastos, setGastos] = useState([]);
   const [isGroupsOpen, setIsGroupsOpen] = useState(false);
   const [isFriendsOpen, setIsFriendsOpen] = useState(false);
+  const [gastos, setGastos] = useState([]);
+  const [projectId, setProjectId] = useState(null);
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -107,11 +108,11 @@ export default function Groups() {
 
   const handleCreateGroup = (newGroup) => {
     setGroups((prevGroups) => [...prevGroups, newGroup]);
-    console.log("Nuevo grupo añadido:", newGroup);
   };
 
   const handleSelectGroup = async (group) => {
     console.log("ID del grupo seleccionado:", group.id);
+    setProjectId(group.id);
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -133,10 +134,10 @@ export default function Groups() {
           }),
         }
       );
-
       if (response.ok) {
         const data = await response.json();
         setSelectedGroup(data.project);
+        console.log("Proyecto seleccionado:", projectId);
       }
     } catch (error) {
       console.error("Error al conectar con el backend:", error);
@@ -191,6 +192,7 @@ export default function Groups() {
   };
 
   const handleAddGasto = (newGasto) => {
+    console.log("Selected Group Project ID:", selectedGroup.projectId);
     if (!selectedGroup || selectedGroup.members.length === 0) {
       alert(
         "Por favor, selecciona un grupo con miembros para añadir un gasto."
@@ -347,7 +349,7 @@ export default function Groups() {
                   {selectedGroup.name} {/* Muestra el nombre del grupo */}
                 </h2>
               </div>
-              <Gastos onAddGasto={handleAddGasto} />
+              <Gastos projectId={projectId} onCreateGasto={handleAddGasto} />
             </div>
 
             <div className="mt-4 space-y-6">
@@ -467,7 +469,7 @@ export default function Groups() {
                 />
                 <div>
                   <span className="font-bold text-blue-800">
-                    {selectedGroup.owner.name}
+                    {selectedGroup.owner.name} {selectedGroup.owner.lastname}
                   </span>
                   <p
                     className={`${
@@ -502,7 +504,7 @@ export default function Groups() {
                   />
                   <div>
                     <span className="font-bold text-gray-800">
-                      {member.name}
+                      {member.name} {member.lastname}
                     </span>
                     <p
                       className={`${
