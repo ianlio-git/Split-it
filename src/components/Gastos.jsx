@@ -10,28 +10,17 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { FaPlus } from "react-icons/fa";
+import PropTypes from "prop-types";
 
-export default function CreateTicket({ className, onCreateTicket, projectId }) {
-  // Estado para el diálogo
+export default function CreateTicket({ className, onCreateGasto, projectId }) {
   const [isOpen, setIsOpen] = useState(false);
-  // Estados para los detalles del ticket
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
-  const [distribution, setDistribution] = useState(""); // Nuevo campo
-  const [image, setImage] = useState(null); // Para la imagen (opcional)
+  const [distribution, setDistribution] = useState("");
+  const [image, setImage] = useState("");
 
   const handleSubmit = async () => {
-    const id = projectId;
-
-    // Imprimir los datos antes de enviarlos
-    console.log("ID del proyecto:", id);
-    console.log("Descripción:", description);
-    console.log("Monto:", amount);
-    console.log("Fecha:", date);
-    console.log("Distribución:", distribution);
-    console.log("Imagen:", image);
-
     if (
       description.trim() &&
       amount.trim() &&
@@ -45,50 +34,48 @@ export default function CreateTicket({ className, onCreateTicket, projectId }) {
           return;
         }
 
-        // Crear el objeto con los datos a enviar
-        const formData = new FormData();
-        formData.append("projectId", id);
-        formData.append("description", description);
-        formData.append("date", date);
-        formData.append("amount", parseFloat(amount));
-        formData.append("distribution", parseFloat(distribution));
+        const ticketData = {
+          projectId,
+          description,
+          date,
+          image, // Mantener como string vacío si no se usa
+          amount: parseFloat(amount),
+          distribution,
+        };
 
-        // Si hay una imagen, añadirla al formData
-        if (image) {
-          formData.append("image", image);
-        }
-
-        // Hacer la solicitud POST para crear el ticket
+        // Realizar la solicitud POST
         const response = await fetch(
           "http://localhost:4000/api/tickets/create",
           {
             method: "POST",
             headers: {
-              "x-auth-token": token, // Usamos el token desde el localStorage
+              "Content-Type": "application/json",
+              "x-auth-token": token,
             },
-            body: formData, // Usamos FormData para enviar archivos
+            body: JSON.stringify(ticketData),
           }
         );
 
         if (!response.ok) {
-          throw new Error("No se pudo crear el ticket");
+          const errorData = await response.json();
+          throw new Error(errorData.message || "No se pudo crear el ticket");
         }
 
         const data = await response.json();
 
-        // Llamar a la función para añadir el ticket al estado del componente principal
-        onCreateTicket(data); // Este callback debería actualizar el estado de los tickets
+        // Callback para actualizar el estado del componente principal
+        onCreateGasto(data);
 
-        // Limpiar los campos y cerrar el diálogo
+        // Limpiar campos y cerrar el diálogo
         setDescription("");
         setAmount("");
         setDate("");
         setDistribution("");
-        setImage(null); // Limpiar la imagen
+        setImage("");
         setIsOpen(false);
       } catch (error) {
         console.error("Error al crear el ticket:", error);
-        alert("Hubo un error al crear el ticket");
+        alert("Hubo un error al crear el ticket: " + error.message);
       }
     } else {
       alert("Por favor, completa todos los campos.");
@@ -114,7 +101,6 @@ export default function CreateTicket({ className, onCreateTicket, projectId }) {
           </DialogTitle>
         </DialogHeader>
 
-        {/* Descripción del gasto */}
         <div className="space-y-4">
           <div>
             <Label htmlFor="description" className="text-sm font-medium">
@@ -128,10 +114,6 @@ export default function CreateTicket({ className, onCreateTicket, projectId }) {
               placeholder="Ingresa la descripción del gasto"
             />
           </div>
-        </div>
-
-        {/* Monto del gasto */}
-        <div className="space-y-4">
           <div>
             <Label htmlFor="payment" className="text-sm font-medium">
               Monto del gasto
@@ -145,10 +127,6 @@ export default function CreateTicket({ className, onCreateTicket, projectId }) {
               type="number"
             />
           </div>
-        </div>
-
-        {/* Fecha del gasto */}
-        <div className="space-y-4">
           <div>
             <Label htmlFor="date" className="text-sm font-medium">
               Fecha
@@ -161,10 +139,6 @@ export default function CreateTicket({ className, onCreateTicket, projectId }) {
               type="date"
             />
           </div>
-        </div>
-
-        {/* Distribución del gasto */}
-        <div className="space-y-4">
           <div>
             <Label htmlFor="distribution" className="text-sm font-medium">
               Distribución (%) del gasto
@@ -175,22 +149,18 @@ export default function CreateTicket({ className, onCreateTicket, projectId }) {
               onChange={(e) => setDistribution(e.target.value)}
               className="border border-gray-300 text-black rounded-lg px-3 py-2"
               placeholder="Ingresa la distribución"
-              type="number"
             />
           </div>
-        </div>
-
-        {/* Subir imagen (opcional) */}
-        <div className="space-y-4">
           <div>
             <Label htmlFor="image" className="text-sm font-medium">
               Imagen (opcional)
             </Label>
             <Input
               id="image"
-              type="file"
-              onChange={(e) => setImage(e.target.files[0])}
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
               className="border border-gray-300 text-black rounded-lg px-3 py-2"
+              placeholder="URL de la imagen (opcional)"
             />
           </div>
         </div>
@@ -205,3 +175,9 @@ export default function CreateTicket({ className, onCreateTicket, projectId }) {
     </Dialog>
   );
 }
+CreateTicket.propTypes = {
+  className: PropTypes.string,
+  onCreateGasto: PropTypes.func.isRequired,
+  projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    .isRequired,
+};

@@ -349,6 +349,7 @@ export default function Groups() {
                   {selectedGroup.name} {/* Muestra el nombre del grupo */}
                 </h2>
               </div>
+              {/* aca estoy la concha de tu puta madre ---------------------------------------------------------------------------------------- */}
               <Gastos projectId={projectId} onCreateGasto={handleAddGasto} />
             </div>
 
