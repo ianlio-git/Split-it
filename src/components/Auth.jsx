@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -60,8 +61,9 @@ function Auth() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    if(password !== password2) 
-      {setError("Las contraseñas no coinciden")}
+    if (password !== password2) {
+      setError("Las contraseñas no coinciden");
+    }
     const fullName = name;
     try {
       const response = await fetch("http://localhost:4000/api/users/register", {
@@ -69,7 +71,7 @@ function Auth() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ fullName, email, password}),
+        body: JSON.stringify({ fullName, email, password }),
       });
 
       const result = await response.json();
@@ -93,7 +95,7 @@ function Auth() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email}),
+        body: JSON.stringify({ email }),
       });
 
       const result = await response.json();
@@ -103,8 +105,9 @@ function Auth() {
       resetInputs();
       setForgotPasswordDialogOpen(false);
       setDialogOpen(false);
-      alert("Si el correo electrónico es válido, se enviará un enlace para restablecer la contraseña.");
-      
+      alert(
+        "Si el correo electrónico es válido, se enviará un enlace para restablecer la contraseña."
+      );
     } catch (error) {
       console.error(error);
       setError(error.message);
