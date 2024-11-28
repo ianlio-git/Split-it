@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   FaHome,
   FaTicketAlt,
@@ -19,7 +19,6 @@ import {
 } from "../components/ui/collapsible";
 import CreateGroup from "../components/CreateGroup";
 import Gastos from "../components/Gastos";
-import { div } from "framer-motion/client";
 
 export default function Groups() {
   const [groups, setGroups] = useState([]);
@@ -453,10 +452,43 @@ export default function Groups() {
     setIsModalOpen(false);
     setCurrentImage("");
   };
+  // Función que procesa los tickets y actualiza los saldos
+  // Función que procesa los tickets y actualiza los saldos acumulados
+  function processTickets(group) {
+    const updatedMembers = [...group.members]; // Hacemos una copia de los miembros para no modificar el array original
+
+    // Inicializamos los saldos de cada miembro en 0 si no están definidos
+    updatedMembers.forEach((member) => {
+      member.balance = 0;
+    });
+    console.log(group.tickets.length);
+
+    // Iteramos sobre los tickets
+    group.tickets.forEach((ticket) => {
+      const amountPaid = ticket.amount * (ticket.distribution / 100); // El monto que paga el miembro
+      const amountToDistribute = ticket.amount - amountPaid; // El resto del ticket que se distribuye entre los otros miembros
+      const finalAmountPaid = ticket.amount - amountPaid; // El monto que se distribuye entre los otros miembros
+      // Distribuir el monto entre los otros miembros
+      const sharePerMember = amountToDistribute / (group.members.length - 1); // Cada miembro debe esta cantidad
+      console.log("Share per member:", sharePerMember);
+      console.log("final amount paid:", finalAmountPaid);
+      updatedMembers.forEach((member) => {
+        if (member._id !== ticket.uploader.id) {
+          // Los miembros que no subieron el ticket deben dinero
+          member.balance -= sharePerMember;
+        } else {
+          // El miembro que sube el ticket recibe el monto que pagó
+          member.balance += finalAmountPaid;
+        }
+      });
+    });
+    return updatedMembers; // Devolvemos los miembros con los saldos actualizados
+  }
 
   //main return
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
+      {/* aca se mapean los grupos y los amigos */}
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
         <Collapsible
           open={isGroupsOpen}
@@ -531,9 +563,8 @@ export default function Groups() {
         </div>
       </div>
 
+      {/*selecciona un grupo */}
       <div className="w-full md:w-2/4 p-4 bg-white shadow-md">
-        {/* el usuario selecciona un grupo */}
-
         {selectedGroup ? (
           <div>
             <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
@@ -597,7 +628,7 @@ export default function Groups() {
                           <span className="font-medium text-gray-900">
                             Porcentaje:
                           </span>{" "}
-                          %{ticket.distribution}
+                          {ticket.distribution}%
                         </p>
                       </div>
                     </div>
@@ -641,21 +672,22 @@ export default function Groups() {
         )}
       </div>
 
-      {/* se mapean los usuarios*/}
-
+      {/* aca se mapean los miembros del grupo */}
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
         {/* Título */}
         <div className="flex items-center mb-4">
           <FaMoneyBillWave className="text-gray-600 mr-2 text-2xl" />
-          <h2 className="text-2xl font-bold text-gray-800">Saldos del Grupo</h2>
+          <h2 className="text-2xl font-bold text-gray-800">
+            Tickets del Grupo
+          </h2>
         </div>
 
         {/* Verifica si hay un grupo seleccionado */}
         {selectedGroup ? (
           <ul className="space-y-4">
             {console.log("Selected Group:", selectedGroup)}
-            {/* Lista de miembros */}
-            {selectedGroup.members.map((member) => (
+            {/* Procesa los tickets y obtiene los saldos actualizados */}
+            {processTickets(selectedGroup).map((member) => (
               <li
                 key={member._id}
                 className={`flex items-center justify-between p-3 rounded-lg shadow-sm ${
@@ -673,7 +705,7 @@ export default function Groups() {
                   <div>
                     <span
                       className={`font-bold ${
-                        member.id === selectedGroup.owner._id
+                        member._id === selectedGroup.owner._id
                           ? "text-blue-800" // Texto en otro color si es el propietario
                           : "text-gray-800"
                       }`}
