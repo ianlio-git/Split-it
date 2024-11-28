@@ -245,6 +245,7 @@ export default function Groups() {
 
       alert("Grupo eliminado con éxito.");
       console.log("Grupo eliminado con éxito");
+      window.location.reload();
     } catch (error) {
       console.error("Error al eliminar el grupo:", error.message);
       alert("Error al eliminar el grupo: " + error.message);
@@ -431,6 +432,7 @@ export default function Groups() {
 
       alert("Miembro eliminado con éxito.");
       console.log("Miembro eliminado con éxito");
+      window.location.reload();
     } catch (error) {
       console.error("Error al eliminar al miembro:", error.message);
       alert("Error al eliminar al miembro:", error.message);
@@ -651,44 +653,16 @@ export default function Groups() {
         {/* Verifica si hay un grupo seleccionado */}
         {selectedGroup ? (
           <ul className="space-y-4">
-            {/* Muestra al propietario como miembro destacado */}
-            <li
-              key={selectedGroup.owner.id}
-              className="flex items-center justify-between p-3 bg-blue-50 rounded-lg shadow-sm"
-            >
-              <div className="flex items-center">
-                <img
-                  src={selectedGroup.owner.photo}
-                  className="w-12 h-12 rounded-full mr-4 object-cover"
-                />
-                <div>
-                  <span className="font-bold text-blue-800">
-                    {selectedGroup.owner.name} {selectedGroup.owner.lastname}
-                  </span>
-                  <p
-                    className={`${
-                      selectedGroup.owner.balance < 0
-                        ? "text-red-500"
-                        : "text-green-600"
-                    } font-semibold`}
-                  >
-                    {selectedGroup.owner.balance < 0 ? "Debe" : "Recupera"} ${" "}
-                    {Math.abs(selectedGroup.owner.balance).toFixed(2)}
-                  </p>
-                </div>
-              </div>
-              <div className="text-center p-2">
-                <p className="text-sm font-semibold text-blue-900">
-                  - Propietario -
-                </p>
-              </div>
-            </li>
-
+            {console.log("Selected Group:", selectedGroup)}
             {/* Lista de miembros */}
             {selectedGroup.members.map((member) => (
               <li
-                key={member.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg shadow-sm"
+                key={member._id}
+                className={`flex items-center justify-between p-3 rounded-lg shadow-sm ${
+                  member._id === selectedGroup.owner._id
+                    ? "bg-blue-50" // Color de fondo si es el propietario
+                    : "bg-gray-50" // Color de fondo si no es el propietario
+                }`}
               >
                 {/* Información del miembro */}
                 <div className="flex items-center">
@@ -697,7 +671,13 @@ export default function Groups() {
                     className="w-10 h-10 rounded-full mr-4 object-cover"
                   />
                   <div>
-                    <span className="font-bold text-gray-800">
+                    <span
+                      className={`font-bold ${
+                        member.id === selectedGroup.owner._id
+                          ? "text-blue-800" // Texto en otro color si es el propietario
+                          : "text-gray-800"
+                      }`}
+                    >
                       {member.name} {member.lastname}
                     </span>
                     <p
@@ -711,13 +691,25 @@ export default function Groups() {
                   </div>
                 </div>
 
-                {/* Botón para eliminar */}
-                <button
-                  onClick={() => handleDeleteMember(member.id)}
-                  className="text-gray-500 hover:text-red-500 transition-colors duration-200"
-                >
-                  <FaTrash />
-                </button>
+                {/* Mostrar "Propietario" si es el propietario, si no, mostrar el botón de eliminar */}
+                {console.log(
+                  "Owner ID:",
+                  selectedGroup.owner._id, // Ahora accedemos a _id dentro del objeto owner
+                  "Member ID:",
+                  member._id
+                )}
+                {member._id === selectedGroup.owner._id ? (
+                  <span className="text-blue-600 font-semibold">
+                    -Propietario-
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => handleDeleteMember(member._id)}
+                    className="text-gray-500 hover:text-red-500 transition-colors duration-200"
+                  >
+                    <FaTrash />
+                  </button>
+                )}
               </li>
             ))}
           </ul>
