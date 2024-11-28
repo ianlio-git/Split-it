@@ -477,12 +477,10 @@ export default function Groups() {
                         </p>
                         <p className="text-sm text-gray-700">
                           <span className="font-medium text-gray-900">
-                            Monto por persona:
+                            Porcentaje:
                           </span>{" "}
-                          $
-                          {(ticket.amount / ticket.distribution || 0).toFixed(
-                            2
-                          )}
+                          %
+                          {(ticket.distribution)}
                         </p>
                       </div>
                     </div>
@@ -525,7 +523,7 @@ export default function Groups() {
           </p>
         )}
       </div>
-
+        
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
         {/* Título */}
         <div className="flex items-center mb-4">

@@ -23,8 +23,7 @@ export default function CreateTicket({ className, onCreateGasto, projectId }) {
     if (
       description.trim() &&
       amount.trim() &&
-      date.trim() &&
-      distribution.trim()
+      date.trim()
     ) {
       try {
         const token = localStorage.getItem("token");
@@ -140,17 +139,29 @@ export default function CreateTicket({ className, onCreateGasto, projectId }) {
             />
           </div>
           <div>
-            <Label htmlFor="distribution" className="text-sm font-medium">
-              Distribución (%) del gasto
-            </Label>
-            <Input
-              id="distribution"
-              value={distribution}
-              onChange={(e) => setDistribution(e.target.value)}
-              className="border border-gray-300 text-black rounded-lg px-3 py-2"
-              placeholder="Ingresa la distribución"
-            />
-          </div>
+  <Label htmlFor="distribution" className="text-sm font-medium">
+    Distribución (%) del gasto
+  </Label>
+  <Input
+    id="distribution"
+    type="number" // Solo permite números
+    min="0"      // Valor mínimo permitido
+    max="100"    // Valor máximo permitido
+    value={distribution}
+    onChange={(e) => {
+      const value = parseFloat(e.target.value);
+      if (value < 0 || value >= 100) {
+        setDistribution(50); // Asigna 50 si está fuera del rango
+      } else {
+        setDistribution(value); // Actualiza con el valor dentro del rango
+      }
+    }}
+    className="border border-gray-300 text-black rounded-lg px-3 py-2"
+    placeholder="Ingresa la distribución"
+  />
+</div>
+
+
           <div>
             <Label htmlFor="image" className="text-sm font-medium">
               Imagen (opcional)
