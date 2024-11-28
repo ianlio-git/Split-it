@@ -355,14 +355,6 @@ export default function Groups() {
         group.id === selectedGroup.id ? updatedGroup : group
       )
     );
-
-    const gastoWithDivision = {
-      ...newGasto,
-      dividedAmount: expensePerMember,
-      paidBy: selectedGroup.owner, // Assuming the first member paid
-    };
-
-    setGastos((prevGastos) => [...prevGastos, gastoWithDivision]);
   };
 
   //maneja la eliminacion de un miembro
