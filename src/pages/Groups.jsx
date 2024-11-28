@@ -29,6 +29,7 @@ export default function Groups() {
   const [gastos, setGastos] = useState([]);
   const [projectId, setProjectId] = useState(null);
 
+  //funcion para obtener los grupos y amigos
   useEffect(() => {
     const fetchGroups = async () => {
       const token = localStorage.getItem("token");
@@ -134,7 +135,10 @@ export default function Groups() {
           if (response.ok) {
             const data = await response.json();
             setSelectedGroup(data.project);
-            console.log("Proyecto seleccionado desde localStorage:", savedGroupId);
+            console.log(
+              "Proyecto seleccionado desde localStorage:",
+              savedGroupId
+            );
           }
         } catch (error) {
           console.error("Error al conectar con el backend:", error);
@@ -148,17 +152,18 @@ export default function Groups() {
     fetchFriends();
   }, []);
 
+  //maneja la creacion de un grupo
   const handleCreateGroup = (newGroup) => {
     setGroups((prevGroups) => [...prevGroups, newGroup]);
   };
 
+  //maneja la seleccion de un grupo
   const handleSelectGroup = async (group) => {
     console.log("ID del grupo seleccionado:", group.id);
     setProjectId(group.id);
 
-    
     // Guardamos el ID del grupo en el localStorage
-  localStorage.setItem("selectedGroupId", group.id);
+    localStorage.setItem("selectedGroupId", group.id);
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -190,15 +195,63 @@ export default function Groups() {
     }
   };
 
-  const handleDeleteGroup = (groupId) => {
-    setGroups((prevGroups) =>
-      prevGroups.filter((group) => group.id !== groupId)
-    );
-    if (selectedGroup && selectedGroup.id === groupId) {
-      setSelectedGroup(null);
+  //maneja la eliminacion de un grupo
+  const handleDeleteGroup = async (groupId) => {
+    // Confirmación antes de eliminar
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este grupo?"))
+      return;
+
+    try {
+      // Obtener el token del localStorage
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert(
+          "Error: Token de autenticación no encontrado. Por favor, inicia sesión."
+        );
+        return;
+      }
+
+      // Hacer la llamada DELETE a la API
+      const response = await fetch(
+        "http://localhost:4000/api/projects/delete-project",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token, // Aquí usamos el token extraído
+          },
+          body: JSON.stringify({ projectId: groupId }),
+        }
+      );
+
+      if (!response.ok) {
+        // Intentar obtener el mensaje de error desde la respuesta del backend
+        const errorData = await response.json();
+        const errorMessage =
+          errorData.message || "Error desconocido al eliminar el grupo.";
+        alert(`No se pudo eliminar el grupo: ${errorMessage}`);
+        return;
+      }
+
+      // Si la eliminación es exitosa, actualizamos el estado local
+      setGroups((prevGroups) =>
+        prevGroups.filter((group) => group.id !== groupId)
+      );
+
+      // Si el grupo eliminado estaba seleccionado, lo limpiamos
+      if (selectedGroup && selectedGroup.id === groupId) {
+        setSelectedGroup(null);
+      }
+
+      alert("Grupo eliminado con éxito.");
+      console.log("Grupo eliminado con éxito");
+    } catch (error) {
+      console.error("Error al eliminar el grupo:", error.message);
+      alert("Error al eliminar el grupo: " + error.message);
     }
   };
 
+  //maneja la adicion de un amigo a un grupo
   const handleAddFriendToGroup = async (friend) => {
     const token = localStorage.getItem("token");
     const projectId = localStorage.getItem("selectedGroupId");
@@ -208,39 +261,44 @@ export default function Groups() {
       alert("Por favor, selecciona un grupo primero.");
       return;
     }
-  
+
     if (!token || !projectId) {
       alert("Faltan datos necesarios en el localStorage.");
       return;
     }
-  
+
     const isAlreadyInGroup = selectedGroup.members.some(
       (member) => member.id === friend._id
     );
-  
+
     if (isAlreadyInGroup) {
       alert(`El amigo ya está en el grupo.`);
       return;
     }
-  
+
     try {
-      const response = await fetch("http://localhost:4000/api/projects/add-members", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-auth-token": token,
-        },
-        body: JSON.stringify({
-          projectId: projectId,
-          memberId: friend._id,
-        }),
-      });
-  
+      const response = await fetch(
+        "http://localhost:4000/api/projects/add-members",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token,
+          },
+          body: JSON.stringify({
+            projectId: projectId,
+            memberId: friend._id,
+          }),
+        }
+      );
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Error al añadir el miembro al grupo.");
+        throw new Error(
+          errorData.message || "Error al añadir el miembro al grupo."
+        );
       }
-  
+
       // Si la solicitud es exitosa, actualizamos el grupo localmente
       const newMember = {
         id: friend._id,
@@ -248,28 +306,28 @@ export default function Groups() {
         balance: 0,
         image: "https://via.placeholder.com/40",
       };
-  
+
       const updatedGroup = {
         ...selectedGroup,
         members: [...selectedGroup.members, newMember],
       };
-  
+
       setGroups((prevGroups) =>
         prevGroups.map((group) =>
           group.id === selectedGroup.id ? updatedGroup : group
         )
       );
-  
+
       setSelectedGroup(updatedGroup);
-  
+
       alert(`El amigo fue añadido al grupo ${selectedGroup.name}`);
     } catch (error) {
       console.error("Error al añadir el miembro:", error.message);
       alert(`Error al añadir el miembro: ${error.message}`);
     }
   };
-  
 
+  //maneja la creacion de un gasto
   const handleAddGasto = (newGasto) => {
     if (!selectedGroup) {
       alert(
@@ -305,26 +363,86 @@ export default function Groups() {
     };
 
     setGastos((prevGastos) => [...prevGastos, gastoWithDivision]);
-  }; 
+  };
 
-  const handleDeleteMember = (memberId) => {
-    if (!selectedGroup) return;
+  //maneja la eliminacion de un miembro
+  const handleDeleteMember = async (memberId) => {
+    if (!selectedGroup) {
+      alert("No hay un grupo seleccionado.");
+      return;
+    }
 
-    const updatedMembers = selectedGroup.members.filter(
-      (member) => member.id !== memberId
-    );
+    // Confirmar acción
+    if (!window.confirm("¿Estás seguro de que deseas eliminar a este miembro?"))
+      return;
 
-    const updatedGroup = {
-      ...selectedGroup,
-      members: updatedMembers,
-    };
+    try {
+      // Obtener el token del localStorage
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert(
+          "Error: Token de autenticación no encontrado. Por favor, inicia sesión."
+        );
+        return;
+      }
 
-    setSelectedGroup(updatedGroup);
-    setGroups((prevGroups) =>
-      prevGroups.map((group) =>
-        group.id === selectedGroup.id ? updatedGroup : group
-      )
-    );
+      // Obtener el ID del proyecto desde el localStorage
+      const projectId = localStorage.getItem("selectedGroupId");
+      if (!projectId) {
+        alert(
+          "Error: ID del proyecto no encontrado. Por favor, selecciona un grupo."
+        );
+        return;
+      }
+
+      // Hacer la llamada DELETE a la API
+      const response = await fetch(
+        "http://localhost:4000/api/projects/delete-member",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token, // Aquí usamos el token extraído
+          },
+          body: JSON.stringify({
+            projectId: projectId, // ID del proyecto
+            memberId: memberId, // ID del miembro a eliminar
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        // Intentar obtener el mensaje de error desde la respuesta del backend
+        const errorData = await response.json();
+        const errorMessage =
+          errorData.message || "Error desconocido al eliminar el miembro.";
+        alert(`No se pudo eliminar al miembro: ${errorMessage}`);
+        return;
+      }
+
+      // Actualizar el estado local si la eliminación fue exitosa
+      const updatedMembers = selectedGroup.members.filter(
+        (member) => member.id !== memberId
+      );
+
+      const updatedGroup = {
+        ...selectedGroup,
+        members: updatedMembers,
+      };
+
+      setSelectedGroup(updatedGroup);
+      setGroups((prevGroups) =>
+        prevGroups.map((group) =>
+          group.id === selectedGroup.id ? updatedGroup : group
+        )
+      );
+
+      alert("Miembro eliminado con éxito.");
+      console.log("Miembro eliminado con éxito");
+    } catch (error) {
+      console.error("Error al eliminar al miembro:", error.message);
+      alert("Error al eliminar al miembro:", error.message);
+    }
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -341,6 +459,8 @@ export default function Groups() {
     setIsModalOpen(false);
     setCurrentImage("");
   };
+
+  //main return
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
@@ -479,8 +599,7 @@ export default function Groups() {
                           <span className="font-medium text-gray-900">
                             Porcentaje:
                           </span>{" "}
-                          %
-                          {(ticket.distribution)}
+                          %{ticket.distribution}
                         </p>
                       </div>
                     </div>
@@ -523,7 +642,7 @@ export default function Groups() {
           </p>
         )}
       </div>
-        
+
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
         {/* Título */}
         <div className="flex items-center mb-4">
@@ -614,6 +733,8 @@ export default function Groups() {
     </div>
   );
 }
+
+//muestra los grupos
 function GroupsList({
   groups,
   selectedGroup,
@@ -665,7 +786,7 @@ function GroupsList({
     </div>
   );
 }
-
+//prop types de grupos para que no rompa
 GroupsList.propTypes = {
   groups: PropTypes.arrayOf(
     PropTypes.shape({
@@ -680,6 +801,7 @@ GroupsList.propTypes = {
   handleDeleteGroup: PropTypes.func.isRequired,
 };
 
+//muestra los amigos
 function FriendsList({ friends, handleAddFriendToGroup }) {
   return (
     <div>
@@ -711,7 +833,7 @@ function FriendsList({ friends, handleAddFriendToGroup }) {
     </div>
   );
 }
-
+//prop types de amigos para que no rompa
 FriendsList.propTypes = {
   friends: PropTypes.arrayOf(
     PropTypes.shape({
