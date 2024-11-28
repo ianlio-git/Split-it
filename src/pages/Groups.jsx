@@ -19,6 +19,7 @@ import {
 } from "../components/ui/collapsible";
 import CreateGroup from "../components/CreateGroup";
 import Gastos from "../components/Gastos";
+import { div } from "framer-motion/client";
 
 export default function Groups() {
   const [groups, setGroups] = useState([]);
@@ -537,6 +538,8 @@ export default function Groups() {
       </div>
 
       <div className="w-full md:w-2/4 p-4 bg-white shadow-md">
+        {/* el usuario selecciona un grupo */}
+
         {selectedGroup ? (
           <div>
             <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
@@ -549,6 +552,8 @@ export default function Groups() {
               {/* ---------------------------------------------------------------------------------------- */}
               <Gastos projectId={projectId} onCreateGasto={handleAddGasto} />
             </div>
+
+            {/* se mapean los tikets */}
 
             <div className="mt-4 space-y-6">
               {selectedGroup.tickets && selectedGroup.tickets.length > 0 ? (
@@ -641,6 +646,8 @@ export default function Groups() {
           </p>
         )}
       </div>
+
+      {/* se mapean los usuarios*/}
 
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
         {/* Título */}
