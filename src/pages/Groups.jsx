@@ -87,6 +87,7 @@ export default function Groups() {
 
         if (response.ok) {
           const data = await response.json();
+          console.log("data", data);
           if (data.friends && Array.isArray(data.friends)) {
             setFriends(data.friends); // Si el backend envía un array de amigos
           } else if (data.friend) {
@@ -102,6 +103,47 @@ export default function Groups() {
       }
     };
 
+    const savedGroupId = localStorage.getItem("selectedGroupId");
+
+    // Si hay un ID guardado, seleccionamos automáticamente ese grupo
+    if (savedGroupId) {
+      setProjectId(savedGroupId);
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No hay token en el localStorage.");
+        return;
+      }
+
+      const fetchGroupDetails = async () => {
+        try {
+          const response = await fetch(
+            "http://localhost:4000/api/projects/post-details",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-auth-token": token,
+              },
+              body: JSON.stringify({
+                projectId: savedGroupId,
+              }),
+            }
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            setSelectedGroup(data.project);
+            console.log("Proyecto seleccionado desde localStorage:", savedGroupId);
+          }
+        } catch (error) {
+          console.error("Error al conectar con el backend:", error);
+        }
+      };
+
+      fetchGroupDetails();
+    }
+
     fetchGroups();
     fetchFriends();
   }, []);
@@ -113,6 +155,10 @@ export default function Groups() {
   const handleSelectGroup = async (group) => {
     console.log("ID del grupo seleccionado:", group.id);
     setProjectId(group.id);
+
+    
+    // Guardamos el ID del grupo en el localStorage
+  localStorage.setItem("selectedGroupId", group.id);
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -153,47 +199,79 @@ export default function Groups() {
     }
   };
 
-  const handleAddFriendToGroup = (friendName) => {
+  const handleAddFriendToGroup = async (friend) => {
+    const token = localStorage.getItem("token");
+    const projectId = localStorage.getItem("selectedGroupId");
+    console.log("projectId", projectId);
+    console.log("token", token);
     if (!selectedGroup) {
       alert("Por favor, selecciona un grupo primero.");
       return;
     }
-
-    const isAlreadyInGroup = selectedGroup.members.some(
-      (member) => member.name === friendName
-    );
-
-    if (isAlreadyInGroup) {
-      alert(`${friendName} ya está en el grupo.`);
+  
+    if (!token || !projectId) {
+      alert("Faltan datos necesarios en el localStorage.");
       return;
     }
-
-    const newMember = {
-      id: Date.now(),
-      name: friendName,
-      balance: 0,
-      image: "https://via.placeholder.com/40",
-    };
-
-    const updatedGroup = {
-      ...selectedGroup,
-      members: [...selectedGroup.members, newMember],
-    };
-
-    setGroups((prevGroups) =>
-      prevGroups.map((group) =>
-        group.id === selectedGroup.id ? updatedGroup : group
-      )
+  
+    const isAlreadyInGroup = selectedGroup.members.some(
+      (member) => member.id === friend._id
     );
-
-    setSelectedGroup(updatedGroup);
-
-    alert(`${friendName} fue añadido al grupo ${selectedGroup.name}`);
+  
+    if (isAlreadyInGroup) {
+      alert(`El amigo ya está en el grupo.`);
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://localhost:4000/api/projects/add-members", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token": token,
+        },
+        body: JSON.stringify({
+          projectId: projectId,
+          memberId: friend._id,
+        }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al añadir el miembro al grupo.");
+      }
+  
+      // Si la solicitud es exitosa, actualizamos el grupo localmente
+      const newMember = {
+        id: friend._id,
+        name: friend.name, // Si tienes el nombre disponible, úsalo aquí
+        balance: 0,
+        image: "https://via.placeholder.com/40",
+      };
+  
+      const updatedGroup = {
+        ...selectedGroup,
+        members: [...selectedGroup.members, newMember],
+      };
+  
+      setGroups((prevGroups) =>
+        prevGroups.map((group) =>
+          group.id === selectedGroup.id ? updatedGroup : group
+        )
+      );
+  
+      setSelectedGroup(updatedGroup);
+  
+      alert(`El amigo fue añadido al grupo ${selectedGroup.name}`);
+    } catch (error) {
+      console.error("Error al añadir el miembro:", error.message);
+      alert(`Error al añadir el miembro: ${error.message}`);
+    }
   };
+  
 
   const handleAddGasto = (newGasto) => {
-    console.log("Selected Group Project ID:", selectedGroup.projectId);
-    if (!selectedGroup || selectedGroup.members.length === 0) {
+    if (!selectedGroup) {
       alert(
         "Por favor, selecciona un grupo con miembros para añadir un gasto."
       );
@@ -223,11 +301,11 @@ export default function Groups() {
     const gastoWithDivision = {
       ...newGasto,
       dividedAmount: expensePerMember,
-      paidBy: selectedGroup.members[0].name, // Assuming the first member paid
+      paidBy: selectedGroup.owner, // Assuming the first member paid
     };
 
     setGastos((prevGastos) => [...prevGastos, gastoWithDivision]);
-  };
+  }; 
 
   const handleDeleteMember = (memberId) => {
     if (!selectedGroup) return;
@@ -620,7 +698,7 @@ function FriendsList({ friends, handleAddFriendToGroup }) {
             >
               <span className="text-gray-700">{friend.name}</span>
               <Button
-                onClick={() => handleAddFriendToGroup(friend.name)}
+                onClick={() => handleAddFriendToGroup(friend)}
                 size="sm"
                 variant="outline"
                 className="ml-2"
