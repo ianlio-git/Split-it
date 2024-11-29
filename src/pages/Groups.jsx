@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   FaHome,
   FaTicketAlt,
@@ -19,7 +19,6 @@ import {
 } from "../components/ui/collapsible";
 import CreateGroup from "../components/CreateGroup";
 import Gastos from "../components/Gastos";
-import { div } from "framer-motion/client";
 
 export default function Groups() {
   const [groups, setGroups] = useState([]);
@@ -28,6 +27,7 @@ export default function Groups() {
   const [isGroupsOpen, setIsGroupsOpen] = useState(false);
   const [isFriendsOpen, setIsFriendsOpen] = useState(false);
   const [projectId, setProjectId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   //funcion para obtener los grupos y amigos
   useEffect(() => {
@@ -245,6 +245,7 @@ export default function Groups() {
 
       alert("Grupo eliminado con éxito.");
       console.log("Grupo eliminado con éxito");
+      window.location.reload();
     } catch (error) {
       console.error("Error al eliminar el grupo:", error.message);
       alert("Error al eliminar el grupo: " + error.message);
@@ -355,14 +356,6 @@ export default function Groups() {
         group.id === selectedGroup.id ? updatedGroup : group
       )
     );
-
-    const gastoWithDivision = {
-      ...newGasto,
-      dividedAmount: expensePerMember,
-      paidBy: selectedGroup.owner, // Assuming the first member paid
-    };
-
-    setGastos((prevGastos) => [...prevGastos, gastoWithDivision]);
   };
 
   //maneja la eliminacion de un miembro
@@ -439,6 +432,7 @@ export default function Groups() {
 
       alert("Miembro eliminado con éxito.");
       console.log("Miembro eliminado con éxito");
+      window.location.reload();
     } catch (error) {
       console.error("Error al eliminar al miembro:", error.message);
       alert("Error al eliminar al miembro:", error.message);
@@ -460,9 +454,43 @@ export default function Groups() {
     setCurrentImage("");
   };
 
+  // Función que procesa los tickets y actualiza los saldos
+  // Función que procesa los tickets y actualiza los saldos acumulados
+  function processTickets(group) {
+    const updatedMembers = [...group.members]; // Hacemos una copia de los miembros para no modificar el array original
+
+    // Inicializamos los saldos de cada miembro en 0 si no están definidos
+    updatedMembers.forEach((member) => {
+      member.balance = 0;
+    });
+    console.log(group.tickets.length);
+
+    // Iteramos sobre los tickets
+    group.tickets.forEach((ticket) => {
+      const amountPaid = ticket.amount * (ticket.distribution / 100); // El monto que paga el miembro
+      const amountToDistribute = ticket.amount - amountPaid; // El resto del ticket que se distribuye entre los otros miembros
+      const finalAmountPaid = ticket.amount - amountPaid; // El monto que se distribuye entre los otros miembros
+      // Distribuir el monto entre los otros miembros
+      const sharePerMember = amountToDistribute / (group.members.length - 1); // Cada miembro debe esta cantidad
+      console.log("Share per member:", sharePerMember);
+      console.log("final amount paid:", finalAmountPaid);
+      updatedMembers.forEach((member) => {
+        if (member._id !== ticket.uploader.id) {
+          // Los miembros que no subieron el ticket deben dinero
+          member.balance -= sharePerMember;
+        } else {
+          // El miembro que sube el ticket recibe el monto que pagó
+          member.balance += finalAmountPaid;
+        }
+      });
+    });
+    return updatedMembers; // Devolvemos los miembros con los saldos actualizados
+  }
+
   //main return
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
+      {/* aca se mapean los grupos y los amigos */}
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
         <Collapsible
           open={isGroupsOpen}
@@ -537,9 +565,8 @@ export default function Groups() {
         </div>
       </div>
 
+      {/*selecciona un grupo */}
       <div className="w-full md:w-2/4 p-4 bg-white shadow-md">
-        {/* el usuario selecciona un grupo */}
-
         {selectedGroup ? (
           <div>
             <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
@@ -603,7 +630,7 @@ export default function Groups() {
                           <span className="font-medium text-gray-900">
                             Porcentaje:
                           </span>{" "}
-                          %{ticket.distribution}
+                          {ticket.distribution}%
                         </p>
                       </div>
                     </div>
@@ -647,88 +674,194 @@ export default function Groups() {
         )}
       </div>
 
-      {/* se mapean los usuarios*/}
-
+      {/* aca se mapean los miembros del grupo */}
       <div className="w-full md:w-1/4 p-4 bg-white shadow-md">
         {/* Título */}
-        <div className="flex items-center mb-4">
+        <div className="flex items-center justify-center mb-4">
           <FaMoneyBillWave className="text-gray-600 mr-2 text-2xl" />
-          <h2 className="text-2xl font-bold text-gray-800">Saldos del Grupo</h2>
+          <h2 className="text-2xl font-bold text-gray-800">
+            Miembros del Grupo
+          </h2>
         </div>
 
         {/* Verifica si hay un grupo seleccionado */}
         {selectedGroup ? (
-          <ul className="space-y-4">
-            {/* Muestra al propietario como miembro destacado */}
-            <li
-              key={selectedGroup.owner.id}
-              className="flex items-center justify-between p-3 bg-blue-50 rounded-lg shadow-sm"
-            >
-              <div className="flex items-center">
-                <img
-                  src={selectedGroup.owner.photo}
-                  className="w-12 h-12 rounded-full mr-4 object-cover"
-                />
-                <div>
-                  <span className="font-bold text-blue-800">
-                    {selectedGroup.owner.name} {selectedGroup.owner.lastname}
-                  </span>
-                  <p
-                    className={`${
-                      selectedGroup.owner.balance < 0
-                        ? "text-red-500"
-                        : "text-green-600"
-                    } font-semibold`}
-                  >
-                    {selectedGroup.owner.balance < 0 ? "Debe" : "Recupera"} ${" "}
-                    {Math.abs(selectedGroup.owner.balance).toFixed(2)}
-                  </p>
-                </div>
-              </div>
-              <div className="text-center p-2">
-                <p className="text-sm font-semibold text-blue-900">
-                  - Propietario -
-                </p>
-              </div>
-            </li>
-
-            {/* Lista de miembros */}
-            {selectedGroup.members.map((member) => (
-              <li
-                key={member.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg shadow-sm"
-              >
-                {/* Información del miembro */}
-                <div className="flex items-center">
-                  <img
-                    src={member.photo}
-                    className="w-10 h-10 rounded-full mr-4 object-cover"
-                  />
-                  <div>
-                    <span className="font-bold text-gray-800">
-                      {member.name} {member.lastname}
-                    </span>
-                    <p
-                      className={`${
-                        member.balance < 0 ? "text-red-500" : "text-green-600"
-                      } font-semibold`}
-                    >
-                      {member.balance < 0 ? "Debe" : "Recupera"} ${" "}
-                      {Math.abs(member.balance).toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Botón para eliminar */}
-                <button
-                  onClick={() => handleDeleteMember(member.id)}
-                  className="text-gray-500 hover:text-red-500 transition-colors duration-200"
+          <div>
+            <ul className="space-y-4">
+              {console.log("Selected Group:", selectedGroup)}
+              {/* Procesa los tickets y obtiene los saldos actualizados */}
+              {processTickets(selectedGroup).map((member) => (
+                <li
+                  key={member._id}
+                  className={`flex items-center justify-between p-3 rounded-lg shadow-sm ${
+                    member._id === selectedGroup.owner._id
+                      ? "bg-blue-50" // Color de fondo si es el propietario
+                      : "bg-gray-50" // Color de fondo si no es el propietario
+                  }`}
                 >
-                  <FaTrash />
-                </button>
-              </li>
-            ))}
-          </ul>
+                  {/* Información del miembro */}
+                  <div className="flex items-center">
+                    <img
+                      src={member.photo}
+                      className="w-10 h-10 rounded-full mr-4 object-cover"
+                    />
+                    <div>
+                      <span
+                        className={`font-bold ${
+                          member._id === selectedGroup.owner._id
+                            ? "text-blue-800" // Texto en otro color si es el propietario
+                            : "text-gray-800"
+                        }`}
+                      >
+                        {member.name} {member.lastname}
+                      </span>
+                      <p
+                        className={`${
+                          member.balance < 0 ? "text-red-500" : "text-green-600"
+                        } font-semibold`}
+                      >
+                        {member.balance < 0 ? "Debe" : "Recupera"} ${" "}
+                        {Math.abs(member.balance).toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Mostrar "Propietario" si es el propietario, si no, mostrar el botón de eliminar */}
+                  {member._id === selectedGroup.owner._id ? (
+                    <span className="text-blue-600 font-semibold">
+                      -Propietario-
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => handleDeleteMember(member._id)}
+                      className="text-gray-500 hover:text-red-500 transition-colors duration-200"
+                    >
+                      <FaTrash />
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            {/* Botón para abrir el modal */}
+            <button
+              onClick={() => setShowModal(true)}
+              className="mt-6 px-4 py-2 text-blue-600 hover:text-blue-800 font-semibold text-lg flex justify-center items-center mx-auto"
+            >
+              Ver más información del grupo
+            </button>
+
+            {showModal && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="bg-white rounded-lg p-6 shadow-lg max-w-md w-full relative">
+                  {/* Título del Modal */}
+                  <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+                    Deudas y Créditos
+                  </h2>
+
+                  {/* Lista de Deudas y Créditos */}
+                  <div className="space-y-4">
+                    {(() => {
+                      const positiveBalances = [];
+                      const negativeBalances = [];
+
+                      processTickets(selectedGroup).forEach((member) => {
+                        if (member.balance > 0) {
+                          positiveBalances.push(member);
+                        } else {
+                          negativeBalances.push(member);
+                        }
+                      });
+
+                      const compensation = [];
+                      negativeBalances.forEach((negativeMember) => {
+                        let debt = Math.abs(negativeMember.balance); // Deuda del miembro
+                        const debtorName = negativeMember.name;
+
+                        // Intentamos saldar la deuda con los miembros con saldo positivo
+                        positiveBalances.forEach((positiveMember) => {
+                          if (debt <= 0) return;
+
+                          const amountToPay = Math.min(
+                            debt,
+                            positiveMember.balance
+                          );
+                          debt -= amountToPay;
+
+                          positiveMember.balance -= amountToPay;
+
+                          compensation.push({
+                            debtor: debtorName,
+                            creditor: positiveMember.name,
+                            amount: amountToPay,
+                          });
+                        });
+                      });
+
+                      const result = [];
+
+                      // Mostrar miembros con saldo positivo
+                      positiveBalances.forEach((member) => {
+                        if (member.balance > 0) {
+                          result.push(
+                            <div
+                              key={member._id}
+                              className="flex justify-between items-center text-green-600"
+                            >
+                              <div className="flex items-center">
+                                <span className="font-semibold">
+                                  {member.name}
+                                </span>
+                                <span className="ml-2 text-sm text-gray-500">
+                                  te debe
+                                </span>
+                              </div>
+                              <span className="text-lg font-semibold">
+                                ${member.balance.toFixed(2)}
+                              </span>
+                            </div>
+                          );
+                        }
+                      });
+
+                      // Mostrar compensaciones
+                      compensation.forEach(({ debtor, creditor, amount }) => {
+                        result.push(
+                          <div
+                            key={`${debtor}-${creditor}`}
+                            className="flex justify-between items-center text-red-600"
+                          >
+                            <div className="flex items-center">
+                              <span className="font-semibold">{debtor}</span>
+                              <span className="ml-2 text-sm text-gray-500">
+                                le debe a
+                              </span>
+                              <span className="ml-2 font-semibold text-blue-600">
+                                {creditor}
+                              </span>
+                            </div>
+                            <span className="text-lg font-semibold">
+                              ${amount.toFixed(2)}
+                            </span>
+                          </div>
+                        );
+                      });
+
+                      return result;
+                    })()}
+                  </div>
+
+                  {/* Botón de Cierre del Modal */}
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="absolute top-4 right-4 text-3xl font-semibold text-gray-700 hover:text-gray-900"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         ) : (
           // Mensaje si no hay grupo seleccionado
           <p className="text-xl text-gray-500">
