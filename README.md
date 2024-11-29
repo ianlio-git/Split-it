@@ -46,29 +46,29 @@ Ensure you have the following installed:
    ```
 
 ### IMPORTACIONES
-TIPOGRAFÍA -> import {Typography} from '@mui/material';
-BOTÓN -> import {Button} from '@mui/material';
-ÍCONOS -> import {NombreIcono} from '@mui/icons-material';
-ICON-BUTTON -> import {IconButton} from '@mui/material';
-TEMA -> import {createTheme, ThemeProvider} from "@mui/material/styles";
-APPBAR -> import { AppBar } from '@mui/material';
-TOOLBAR -> import { Toolbar } from '@mui/material';
-CARD -> import {Card, CardContent, CardActions} from '@mui/material';
-NAVBAR -> import NavBar from './components/NavBar';
-LISTA -> import {List,ListItem,ListItemIcon,ListItemText,Divider} from '@mui/material';
+TIPOGRAFÍA -> import {Typography} from '@mui/material'; <br>
+BOTÓN -> import {Button} from '@mui/material'; <br>
+ÍCONOS -> import {NombreIcono} from '@mui/icons-material'; <br>
+ICON-BUTTON -> import {IconButton} from '@mui/material'; <br>
+TEMA -> import {createTheme, ThemeProvider} from "@mui/material/styles"; <br>
+APPBAR -> import { AppBar } from '@mui/material'; <br>
+TOOLBAR -> import { Toolbar } from '@mui/material'; <br>
+CARD -> import {Card, CardContent, CardActions} from '@mui/material'; <br>
+NAVBAR -> import NavBar from './components/NavBar'; <br>
+LISTA -> import {List,ListItem,ListItemIcon,ListItemText,Divider} from '@mui/material'; <br>
 
 ### COMPONENTES PUROS DE MATERIAL UI
 BOTÓN <Button/>
-color = 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | string
-href = "google.com"
-size = 'small' | 'medium' | 'large' | string
-variant = 'contained' | 'outlined' | 'text' | string
-startIcon = {</>}
-endIcon = {</>}
+color = 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | string <br>
+href = "google.com" <br>
+size = 'small' | 'medium' | 'large' | string <br>
+variant = 'contained' | 'outlined' | 'text' | string <br>
+startIcon = {</>} <br>
+endIcon = {</>} <br>
 
 ### ÍCONOS
-color = 'inherit' | 'action' | 'disabled' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' | string
-fontSize = 'inherit' | 'large' | 'medium' | 'small' | string
+color = 'inherit' | 'action' | 'disabled' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' | string <br>
+fontSize = 'inherit' | 'large' | 'medium' | 'small' | string <br>
 NOTA: cada ícono se maneja como componente único, es decir, si para botón tenemos <Button/>, para icono tenemos <CreditCardt/>, <DoNotDisturb/>, y así con cada uno.
 
 
@@ -82,8 +82,8 @@ No tiene props útiles.
 
 
 ### TIPOGRAFÍA <Typography/>
-align = 'center' | 'justify' | 'left' | 'right'
-variant = 'body1' | 'body2' | 'button' | 'caption' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'inherit' | 'overline' | 'subtitle1' | 'subtitle2' | string
+align = 'center' | 'justify' | 'left' | 'right' <br>
+variant = 'body1' | 'body2' | 'button' | 'caption' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'inherit' | 'overline' |<br> 'subtitle1' | 'subtitle2' | string<br>
 color = 'primary' | 'secondary' | 'success'
 
 ### TEMA <ThemeProvider/>
