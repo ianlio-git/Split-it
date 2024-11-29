@@ -45,7 +45,7 @@ Ensure you have the following installed:
    npm start
    ```
 
-IMPORTACIONES
+### IMPORTACIONES
 TIPOGRAFÍA -> import {Typography} from '@mui/material';
 BOTÓN -> import {Button} from '@mui/material';
 ÍCONOS -> import {NombreIcono} from '@mui/icons-material';
@@ -57,7 +57,7 @@ CARD -> import {Card, CardContent, CardActions} from '@mui/material';
 NAVBAR -> import NavBar from './components/NavBar';
 LISTA -> import {List,ListItem,ListItemIcon,ListItemText,Divider} from '@mui/material';
 
-COMPONENTES PUROS DE MATERIAL UI
+### COMPONENTES PUROS DE MATERIAL UI
 BOTÓN <Button/>
 color = 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | string
 href = "google.com"
@@ -66,13 +66,13 @@ variant = 'contained' | 'outlined' | 'text' | string
 startIcon = {</>}
 endIcon = {</>}
 
-ÍCONOS
+### ÍCONOS
 color = 'inherit' | 'action' | 'disabled' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' | string
 fontSize = 'inherit' | 'large' | 'medium' | 'small' | string
 NOTA: cada ícono se maneja como componente único, es decir, si para botón tenemos <Button/>, para icono tenemos <CreditCardt/>, <DoNotDisturb/>, y así con cada uno.
 
 
-ICON-BUTTON
+### ICON-BUTTON
 Siguen la estructura:
 
 <IconButton>
@@ -81,12 +81,12 @@ Siguen la estructura:
 No tiene props útiles.
 
 
-TIPOGRAFÍA <Typography/>
+### TIPOGRAFÍA <Typography/>
 align = 'center' | 'justify' | 'left' | 'right'
 variant = 'body1' | 'body2' | 'button' | 'caption' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'inherit' | 'overline' | 'subtitle1' | 'subtitle2' | string
 color = 'primary' | 'secondary' | 'success'
 
-TEMA <ThemeProvider/>
+### TEMA <ThemeProvider/>
 Sirve para agregar estilos CSS a cualquier componente React. Consta de dos partes:
 
 CreateTheme (va entre los imports y App()):
@@ -107,15 +107,15 @@ ThemeProvider:
      </Button>
     </ThemeProvider>
 
-APPBAR (atómico) <AppBar/>
+### APPBAR (atómico) <AppBar/>
 position = 'absolute' | 'fixed' | 'relative' | 'static' | 'sticky'
 color = 'default' | 'inherit' | 'primary' | 'secondary' | 'transparent' | string
 
-TOOLBAR <ToolBar/>
+### TOOLBAR <ToolBar/>
 variant = 'dense' | 'regular' | string
 
 
-COMPONENTES COMPUESTOS
+### COMPONENTES COMPUESTOS
 Los componentes compuestos van en una carpeta aparte dentro del src llamada components.
 
 La estructura básica es:
@@ -129,7 +129,7 @@ const Componente = () => {
 }
 export default Componente;
 
-NAVBAR - AppBar Compuesto
+### NAVBAR - AppBar Compuesto
 Estructura básica del NavBar:
 
     <AppBar position="static">
@@ -138,7 +138,7 @@ Estructura básica del NavBar:
         </Toolbar>
       </AppBar>
 
-CARD (compuesto) <Card/> <CardContent/> <CardActions/>
+### CARD (compuesto) <Card/> <CardContent/> <CardActions/>
 Estructura básica de la carta:
 
 <Card>
