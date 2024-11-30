@@ -85,7 +85,7 @@ export default function PasswordRecovery() {
 
       const data = await response.json();
       alert("¡Contraseña actualizada con éxito!");
-      navigate("/Main");
+      navigate("/groups");
     } catch (error) {
       console.error("Error en la actualización:", error);
       alert("Hubo un problema al actualizar la contraseña.");

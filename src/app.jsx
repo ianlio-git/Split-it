@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
 import Landing from "./pages/Landing";
-import Main from "./pages/Main";
 import Groups from "./pages/Groups";
 import Profile from "./pages/Profile";
 import Friends from "./pages/Friends";
@@ -23,10 +22,6 @@ const App = () => {
         <main className="flex-1 mt-[4rem]">
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route
-              path="/main"
-              element={<ProtectedRoute element={<Main />} />}
-            />
             <Route
               path="/groups"
               element={<ProtectedRoute element={<Groups />} />}
